@@ -100,29 +100,9 @@
 <body>
 <div id="toast-container"></div>
 
-<header class="site-header">
-  <div class="container nav-inner">
-    <a href="index.html" class="nav-logo">
-      <div class="nav-logo-icon">🎓</div>
-      <div class="nav-logo-text">
-        <span class="nav-logo-name">Consejo Estudiantil</span>
-        <span class="nav-logo-sub">Instituto Pedagógico</span>
-      </div>
-    </a>
-    <nav class="nav-links" id="nav-links">
-      <a href="index.html"      class="nav-link">Inicio</a>
-      <a href="noticias.html"   class="nav-link">Noticias</a>
-      <a href="eventos.html"    class="nav-link">Eventos</a>
-      <a href="propuestas.html" class="nav-link active">Propuestas</a>
-      <a href="votaciones.html" class="nav-link">Votaciones</a>
-      <a href="contacto.html"   class="nav-link">Contacto</a>
-      <a href="admin.html"      class="nav-admin-btn">⚙ Admin</a>
-    </nav>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Menú" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</header>
+<!--HEADER-->
+<div id="header-placeholder"></div>
+
 
 <main class="page-wrapper">
   <div class="page-hero">
@@ -234,14 +214,8 @@
   </section>
 </main>
 
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-bottom">
-      <span>© 2024 Consejo Estudiantil — Instituto Pedagógico</span>
-      <span>Hecho con <span class="footer-bottom-heart">♥</span> por y para los estudiantes</span>
-    </div>
-  </div>
-</footer>
+<!-- FOOTER -->
+<div id="footer-placeholder"></div>
 
 <script type="module">
   import './js/main.js';
@@ -253,8 +227,33 @@
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
   import { toastSuccess, toastError } from './js/ui.js';
   import { initCharCounter, sanitize, formatDate } from './js/main.js';
+import { onAuthChange, crearAdminSiNoExiste } from './js/auth.js';
+import { cargarFooter } from './js/footer.js';
+
+
+
+const headerPlaceholder = document.getElementById('header-placeholder');
+  if (headerPlaceholder) {
+    const response = await fetch('components/header.html');
+    const headerHTML = await response.text();
+    headerPlaceholder.innerHTML = headerHTML;
+    onAuthChange();
+    const toggle = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    if (toggle && navLinks) {
+      toggle.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+        toggle.classList.toggle('open');
+      });
+    }
+  }
+
+  // ── Cargar footer ──
+  cargarFooter();
 
   let currentUser = null;
+
+  
 
   // Storage para votos de propuestas
   function getVoteStorage() {

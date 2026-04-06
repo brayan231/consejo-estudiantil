@@ -155,49 +155,9 @@
   </section>
 </main>
 
-<!-- ── FOOTER ── -->
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <div class="footer-brand-name">🎓 Consejo Estudiantil</div>
-        <div class="footer-brand-sub">Instituto Pedagógico</div>
-        <p class="footer-desc">Representando y defendiendo los intereses de todos los estudiantes del Instituto Pedagógico.</p>
-      </div>
-      <div>
-        <div class="footer-col-title">Páginas</div>
-        <div class="footer-links">
-          <a href="noticias.html">Noticias</a>
-          <a href="eventos.html">Eventos</a>
-          <a href="propuestas.html">Propuestas</a>
-          <a href="votaciones.html">Votaciones</a>
-        </div>
-      </div>
-      <div>
-        <div class="footer-col-title">Estudiantes</div>
-        <div class="footer-links">
-          <a href="contacto.html">Contacto</a>
-          <a href="propuestas.html">Mis propuestas</a>
-          <a href="votaciones.html">Participar</a>
-        </div>
-      </div>
-      <div>
-        <div class="footer-col-title">Institución</div>
-        <div class="footer-links">
-          <a href="#">Reglamento</a>
-          <a href="#">Calendario académico</a>
-          <a href="admin.html">Panel Admin</a>
-        </div>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2024 Consejo Estudiantil — Instituto Pedagógico</span>
-      <span>Hecho con <span class="footer-bottom-heart">♥</span> por y para los estudiantes</span>
-    </div>
-  </div>
-</footer>
+<!-- FOOTER -->
+<div id="footer-placeholder"></div>
 
-<!-- SCRIPT PRINCIPAL -->
 <script type="module">
   import { db, auth } from './js/firebase-config.js';
   import { 
@@ -206,17 +166,11 @@
   import { 
     signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged 
   } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-  
-  // ============================================
-  // SISTEMA DE LOGIN/LOGOUT
-  // ============================================
-import { onAuthChange } from './js/auth.js';
+  import { onAuthChange, crearAdminSiNoExiste } from './js/auth.js';
+  import { cargarFooter } from './js/footer.js';
 
-import { crearAdminSiNoExiste } from './js/auth.js';
-
-// Ejecutar una sola vez para crear el admin
-crearAdminSiNoExiste();
-
+  // Ejecutar una sola vez para crear el admin
+  crearAdminSiNoExiste();
 
   // Cargar header dinámicamente
   const headerPlaceholder = document.getElementById('header-placeholder');
@@ -238,6 +192,9 @@ crearAdminSiNoExiste();
       });
     }
   }
+
+  // Cargar footer
+  cargarFooter();
 
   // Función para mostrar toasts
   function mostrarToast(titulo, mensaje, tipo = 'info') {
@@ -264,8 +221,6 @@ crearAdminSiNoExiste();
       setTimeout(() => toast.remove(), 300);
     }, 3000);
   }
-  
-  
   
   // ============================================
   // FUNCIÓN PARA CARGAR NOTICIAS

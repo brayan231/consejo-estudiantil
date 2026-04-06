@@ -1,5 +1,5 @@
 // js/header-unificado.js
-import { onAuthChange } from './auth-unificado.js';
+import { onAuthChange } from './auth.js';
 
 // Detecta si estamos en GitHub Pages o local
 function getBasePath() {

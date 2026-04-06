@@ -11,29 +11,8 @@
 <body>
 <div id="toast-container"></div>
 
-<header class="site-header">
-  <div class="container nav-inner">
-    <a href="index.html" class="nav-logo">
-      <div class="nav-logo-icon">🎓</div>
-      <div class="nav-logo-text">
-        <span class="nav-logo-name">Consejo Estudiantil</span>
-        <span class="nav-logo-sub">Instituto Pedagógico</span>
-      </div>
-    </a>
-    <nav class="nav-links" id="nav-links">
-      <a href="index.html"      class="nav-link">Inicio</a>
-      <a href="noticias.html"   class="nav-link">Noticias</a>
-      <a href="eventos.html"    class="nav-link">Eventos</a>
-      <a href="propuestas.html" class="nav-link">Propuestas</a>
-      <a href="votaciones.html" class="nav-link">Votaciones</a>
-      <a href="contacto.html"   class="nav-link">Contacto</a>
-      <a href="admin.html"      class="nav-admin-btn">⚙ Admin</a>
-    </nav>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Menú" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</header>
+<!-- HEADER GLOBAL -->
+<div id="header-placeholder"></div>
 
 <main class="page-wrapper">
   <div class="page-hero">
@@ -182,44 +161,61 @@
     </div>
   </section>
 
-  <!-- FAQ -->
-  <section class="section" style="background:var(--white)">
-    <div class="container" style="max-width:760px">
-      <div class="text-center mb-4 reveal">
-        <div class="section-eyebrow">Ayuda</div>
-        <h2>Preguntas frecuentes</h2>
-      </div>
-      <div id="faq-list" style="display:flex;flex-direction:column;gap:1rem">
-        <!-- JS rendered -->
-      </div>
+<section style="background: #ffffff; padding: 3rem 0; border-top: 1px solid #e2e8f0;">
+  <div class="container" style="max-width:760px">
+    <div class="text-center mb-4 reveal">
+      <div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#0ea5e9;margin-bottom:.5rem">Ayuda</div>
+      <h2 style="color:#0f172a;font-size:2rem;font-weight:800;margin:0">Preguntas frecuentes</h2>
     </div>
-  </section>
-</main>
-
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-bottom">
-      <span>© 2024 Consejo Estudiantil — Instituto Pedagógico</span>
-      <span>Hecho con <span class="footer-bottom-heart">♥</span> por y para los estudiantes</span>
-    </div>
+    <div id="faq-list" style="display:flex;flex-direction:column;gap:1rem"></div>
   </div>
-</footer>
+</section>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">
+<!-- FOOTER GLOBAL -->
+<div id="footer-placeholder"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script type="module">
   import './js/main.js';
   import { db } from './js/firebase-config.js';
   import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
   import { toastSuccess, toastError, setBtnLoading } from './js/ui.js';
   import { initCharCounter } from './js/main.js';
+  import { onAuthChange } from './js/auth.js';
+  import { cargarFooter } from './js/footer.js';
 
-  // Char counter
+  // ── Cargar header dinámico ──
+  const headerPlaceholder = document.getElementById('header-placeholder');
+  if (headerPlaceholder) {
+    const response = await fetch('components/header.html');
+    const headerHTML = await response.text();
+    headerPlaceholder.innerHTML = headerHTML;
+
+    // Inicializar auth después de cargar el header
+    onAuthChange();
+
+    // Menú hamburguesa
+    const toggle = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    if (toggle && navLinks) {
+      toggle.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+        toggle.classList.toggle('open');
+      });
+    }
+  }
+
+  // ── Cargar footer dinámico ──
+  cargarFooter();
+
+  // ── Char counter ──
   initCharCounter(
     document.getElementById('c-mensaje'),
     document.getElementById('counter-mensaje'),
     800
   );
 
-  // Submit form
+  // ── Submit form ──
   document.getElementById('form-contacto').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
@@ -261,7 +257,7 @@
     }
   });
 
-  // FAQ
+  // ── FAQ ──
   const faqs = [
     { q: '¿Cuánto demoran en responder?', a: 'El Consejo responde en un máximo de 3 días hábiles. Para urgencias, acércate presencialmente al aula del Consejo.' },
     { q: '¿Mis datos son confidenciales?', a: 'Sí. Toda la información que compartes es tratada con total confidencialidad. Puedes también marcar la opción "anónimo".' },
@@ -273,26 +269,68 @@
   const faqList = document.getElementById('faq-list');
   faqs.forEach((item, i) => {
     const div = document.createElement('div');
-    div.className = 'card reveal';
-    div.style.cssText = 'padding:0;overflow:hidden';
+    div.style.cssText = `
+      overflow: hidden;
+      border-radius: 14px;
+      background: #ffffff;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+      border: 1px solid #e2e8f0;
+      border-left: 4px solid #0ea5e9;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    `;
+
     div.innerHTML = `
-      <button style="width:100%;text-align:left;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:none;border:none;cursor:pointer;font-family:var(--font-body)" onclick="this.parentElement.classList.toggle('faq-open')">
-        <span style="font-weight:700;color:var(--blue-900);font-size:.95rem">${item.q}</span>
-        <span class="faq-icon" style="font-size:1.2rem;transition:transform .3s;flex-shrink:0">＋</span>
+      <button style="
+        width:100%; text-align:left; padding:20px 24px;
+        display:flex; justify-content:space-between; align-items:center;
+        gap:16px; background:transparent; border:none; cursor:pointer;
+        font-family:inherit; transition: background 0.2s;
+      ">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="
+            width:32px; height:32px; border-radius:50%;
+            background:linear-gradient(135deg,#e0f2fe,#bae6fd);
+            display:flex; align-items:center; justify-content:center;
+            flex-shrink:0; font-size:.85rem; font-weight:800; color:#0284c7;
+          ">${i + 1}</div>
+          <span style="font-weight:700;color:#0f172a;font-size:.95rem;line-height:1.4">${item.q}</span>
+        </div>
+        <span class="faq-icon-${i}" style="
+          width:28px; height:28px; border-radius:50%;
+          background:#f0f9ff; border:1.5px solid #bae6fd;
+          display:flex; align-items:center; justify-content:center;
+          font-size:1rem; transition:transform .3s, background .2s;
+          flex-shrink:0; color:#0ea5e9; font-weight:900;
+        ">＋</span>
       </button>
-      <div class="faq-body" style="max-height:0;overflow:hidden;transition:max-height .35s ease">
-        <p style="padding:0 22px 18px;color:var(--gray-600);font-size:.9rem;line-height:1.7">${item.a}</p>
+      <div class="faq-body-${i}" style="max-height:0;overflow:hidden;transition:max-height .35s ease;">
+        <div style="height:1px;background:linear-gradient(90deg,#0ea5e9,#818cf8,transparent);margin:0 24px;opacity:.4"></div>
+        <p style="padding:16px 24px 20px 72px;color:#475569;font-size:.9rem;line-height:1.75;margin:0">${item.a}</p>
       </div>`;
-    div.addEventListener('click', () => {
-      const body = div.querySelector('.faq-body');
-      const icon = div.querySelector('.faq-icon');
-      const open = div.classList.contains('faq-open');
-      body.style.maxHeight = open ? body.scrollHeight + 'px' : '0';
-      body.style.maxHeight = open ? '0' : body.scrollHeight + 'px';
-      icon.style.transform = open ? 'rotate(0)' : 'rotate(45deg)';
+
+    // Hover effect
+    const btn = div.querySelector('button');
+    btn.addEventListener('mouseenter', () => btn.style.background = '#f8fafc');
+    btn.addEventListener('mouseleave', () => btn.style.background = 'transparent');
+
+    let isOpen = false;
+    btn.addEventListener('click', () => {
+      const body = div.querySelector(`.faq-body-${i}`);
+      const icon = div.querySelector(`.faq-icon-${i}`);
+      isOpen = !isOpen;
+      body.style.maxHeight = isOpen ? body.scrollHeight + 'px' : '0';
+      icon.style.transform = isOpen ? 'rotate(45deg)' : 'rotate(0)';
+      icon.style.background = isOpen ? '#0ea5e9' : '#f0f9ff';
+      icon.style.color = isOpen ? '#ffffff' : '#0ea5e9';
+      div.style.borderLeftColor = isOpen ? '#0284c7' : '#0ea5e9';
+      div.style.boxShadow = isOpen
+        ? '0 8px 32px rgba(14,165,233,0.15)'
+        : '0 2px 16px rgba(0,0,0,0.07)';
     });
+
     faqList.appendChild(div);
   });
+
 </script>
 </body>
 </html>

@@ -818,3 +818,54 @@ tr:hover td { background:rgba(0,200,240,.04); color:var(--white); }
    SIDEBAR BADGE (compat)
 ════════════════════════════ */
 .badge-blue  { background:rgba(0,200,240,.12); color:var(--cyan-300); border:1px solid rgba(0,200,240,.25); }
+
+/* ════════════════════════════
+   FAQ
+════════════════════════════ */
+#faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#faq-list > div {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+#faq-list > div button {
+  width: 100%;
+  text-align: left;
+  padding: 18px 22px;
+  background: #ffffff !important;
+  border: none !important;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-family: inherit;
+}
+
+#faq-list > div button:hover {
+  background: #f8fafc !important;
+}
+
+#faq-list > div button span:first-child {
+  font-weight: 700;
+  color: #0f172a !important;
+  font-size: .95rem;
+  line-height: 1.4;
+}
+
+#faq-list > div .faq-body p {
+  padding: 14px 22px 18px;
+  color: #475569 !important;
+  font-size: .9rem;
+  line-height: 1.7;
+  margin: 0;
+  background: #f8fafc;
+}

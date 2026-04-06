@@ -11,29 +11,9 @@
 <body>
 <div id="toast-container"></div>
 
-<header class="site-header">
-  <div class="container nav-inner">
-    <a href="index.html" class="nav-logo">
-      <div class="nav-logo-icon">🎓</div>
-      <div class="nav-logo-text">
-        <span class="nav-logo-name">Consejo Estudiantil</span>
-        <span class="nav-logo-sub">Instituto Pedagógico</span>
-      </div>
-    </a>
-    <nav class="nav-links" id="nav-links">
-      <a href="index.html"      class="nav-link">Inicio</a>
-      <a href="noticias.html"   class="nav-link">Noticias</a>
-      <a href="eventos.html"    class="nav-link">Eventos</a>
-      <a href="propuestas.html" class="nav-link">Propuestas</a>
-      <a href="votaciones.html" class="nav-link">Votaciones</a>
-      <a href="contacto.html"   class="nav-link">Contacto</a>
-      <a href="admin.html"      class="nav-admin-btn">⚙ Admin</a>
-    </nav>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Menú" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</header>
+<!--HEADER-->
+<div id="header-placeholder"></div>
+
 
 <main class="page-wrapper">
   <div class="page-hero">
@@ -75,14 +55,8 @@
   </section>
 </main>
 
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-bottom">
-      <span>© 2024 Consejo Estudiantil — Instituto Pedagógico</span>
-      <span>Hecho con <span class="footer-bottom-heart">♥</span> por y para los estudiantes</span>
-    </div>
-  </div>
-</footer>
+<!-- FOOTER -->
+<div id="footer-placeholder"></div>
 
 <script type="module">
   import './js/main.js';
@@ -90,8 +64,30 @@
   import { daysLeft } from './js/main.js';
   import { db } from './js/firebase-config.js';
   import { collection, query, where, orderBy, limit, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+  import { onAuthChange, crearAdminSiNoExiste } from './js/auth.js';
+  import { cargarFooter } from './js/footer.js';
 
-  // Cargar eventos con filtro por tipo
+  // Cargar header
+  const headerPlaceholder = document.getElementById('header-placeholder');
+  if (headerPlaceholder) {
+    const response = await fetch('components/header.html');
+    const headerHTML = await response.text();
+    headerPlaceholder.innerHTML = headerHTML;
+    onAuthChange();
+    const toggle = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    if (toggle && navLinks) {
+      toggle.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+        toggle.classList.toggle('open');
+      });
+    }
+  }
+
+  // Cargar footer
+  cargarFooter();
+
+  // Variables
   let currentTipo = 'todos';
   let currentSearch = '';
   let eventosData = [];
@@ -99,17 +95,14 @@
   const container = document.getElementById('eventos-list');
   const searchInput = document.getElementById('search-eventos');
 
-  // Función para cargar y filtrar eventos
   async function cargarEventos() {
     try {
       const q = query(collection(db, 'eventos'), orderBy('fecha', 'desc'));
       const snap = await getDocs(q);
-      
       if (snap.empty) {
         container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem">📅 No hay eventos programados</div>';
         return;
       }
-      
       eventosData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       filtrarYMostrar();
     } catch (error) {
@@ -120,13 +113,9 @@
 
   function filtrarYMostrar() {
     let filtrados = [...eventosData];
-    
-    // Filtrar por tipo
     if (currentTipo !== 'todos') {
       filtrados = filtrados.filter(e => e.tipo === currentTipo);
     }
-    
-    // Filtrar por búsqueda
     if (currentSearch) {
       filtrados = filtrados.filter(e => 
         e.titulo?.toLowerCase().includes(currentSearch) ||
@@ -134,27 +123,16 @@
         e.lugar?.toLowerCase().includes(currentSearch)
       );
     }
-    
-    // Mostrar resultados
     if (filtrados.length === 0) {
       container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem">🔍 No se encontraron eventos</div>';
       return;
     }
-    
     container.innerHTML = filtrados.map(evento => {
       const fechaObj = evento.fecha?.toDate ? evento.fecha.toDate() : new Date(evento.fecha);
       const dia = fechaObj.getDate();
       const mes = fechaObj.toLocaleDateString('es-PE', { month: 'short' }).toUpperCase();
-      
-      const tipoColors = {
-        'Académico': 'blue',
-        'Cultural': 'purple',
-        'Deportivo': 'green',
-        'Social': 'orange',
-        'Institucional': 'gold'
-      };
+      const tipoColors = { 'Académico':'blue','Cultural':'purple','Deportivo':'green','Social':'orange','Institucional':'gold' };
       const tipoColor = tipoColors[evento.tipo] || 'gray';
-      
       return `
         <div class="card" style="background:rgba(10,22,40,0.6);border:1px solid var(--border);border-radius:20px;overflow:hidden">
           <div style="display:flex;gap:1rem;flex-wrap:wrap">
@@ -173,12 +151,10 @@
               <p style="font-size:0.85rem;color:var(--text-muted)">${(evento.descripcion || '').substring(0, 100)}${evento.descripcion?.length > 100 ? '...' : ''}</p>
             </div>
           </div>
-        </div>
-      `;
+        </div>`;
     }).join('');
   }
 
-  // Inicializar filtros por tipo
   document.querySelectorAll('#event-tabs .tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('#event-tabs .tab').forEach(t => t.classList.remove('active'));
@@ -188,13 +164,11 @@
     });
   });
 
-  // Búsqueda
   searchInput.addEventListener('input', (e) => {
     currentSearch = e.target.value.toLowerCase();
     filtrarYMostrar();
   });
 
-  // Próximo evento banner
   (async () => {
     const banner = document.getElementById('next-event-banner');
     try {
@@ -219,8 +193,8 @@
     } catch(_) {}
   })();
 
-  // Cargar eventos al inicio
   cargarEventos();
 </script>
+
 </body>
 </html>
