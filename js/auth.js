@@ -11,7 +11,7 @@ import {
   doc, setDoc, getDoc, serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
-const ADMIN_EMAIL = "admin@instituto.edu.pe";
+const ADMIN_EMAILS = ["admin@coes.com"];
 
 // Función para mostrar toasts
 function mostrarToast(titulo, mensaje, tipo = 'info') {
@@ -72,7 +72,7 @@ if (!document.querySelector('#toast-styles')) {
 }
 
 export function isAdmin(user) {
-  return user && user.email === ADMIN_EMAIL;
+  return user && ADMIN_EMAILS.includes(user.email.toLowerCase());
 }
 
 async function saveStudentToFirestore(user) {
@@ -143,7 +143,7 @@ export async function loginWithGoogle() {
 // REGISTRO
 export async function registerStudent(email, password, nombre, carrera) {
   try {
-    if (email === ADMIN_EMAIL) {
+    if (ADMIN_EMAILS.includes(email)) {
       mostrarToast('Error', 'Este correo está reservado para administradores', 'error');
       return null;
     }
@@ -224,4 +224,34 @@ export function onAuthChange(callback) {
     renderAuthButton(user);
     if (callback) callback(user);
   });
+}
+
+// Función para crear admin automáticamente (ejecutar una sola vez)
+export async function crearAdminSiNoExiste() {
+  try {
+    const adminEmail = "admin@coes.com";
+    const adminPassword = "admin123";
+    
+    // Intentar crear el admin
+    const userCredential = await createUserWithEmailAndPassword(auth, adminEmail, adminPassword);
+    console.log('Admin creado exitosamente:', adminEmail);
+    
+    // Guardar en Firestore como admin
+    await setDoc(doc(db, 'estudiantes', userCredential.user.uid), {
+      uid: userCredential.user.uid,
+      nombre: 'Administrador',
+      email: adminEmail,
+      esAdmin: true,
+      fechaRegistro: serverTimestamp()
+    });
+    
+    return userCredential.user;
+  } catch (error) {
+    if (error.code === 'auth/email-already-in-use') {
+      console.log('El admin ya existe');
+    } else {
+      console.error('Error creando admin:', error);
+    }
+    return null;
+  }
 }

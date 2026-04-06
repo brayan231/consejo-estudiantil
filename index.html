@@ -212,6 +212,11 @@
   // ============================================
 import { onAuthChange } from './js/auth.js';
 
+import { crearAdminSiNoExiste } from './js/auth.js';
+
+// Ejecutar una sola vez para crear el admin
+crearAdminSiNoExiste();
+
 
   // Cargar header dinámicamente
   const headerPlaceholder = document.getElementById('header-placeholder');

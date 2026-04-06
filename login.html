@@ -348,7 +348,7 @@
   // Agrega aquí TODOS los emails de admin que tengas creados
   // ============================================================
   const ADMIN_EMAILS = [
-    "admin@instituto.edu.pe",
+    "admin@coes.com",
     "bbbaattoo@gmail.com",  // Cambia por tu email real
     // Agrega más emails de admin aquí
   ];
@@ -359,15 +359,15 @@
   }
 
   function redirectToCorrectPage(user) {
-    console.log('Redirigiendo - Email:', user.email);
-    console.log('¿Es admin?', isAdmin(user));
-    
-    if (isAdmin(user)) {
-      window.location.replace('admin.html');
-    } else {
-      window.location.replace('index.html');
-    }
+  console.log('Redirigiendo - Email:', user.email);
+  console.log('¿Es admin?', isAdmin(user));
+  
+  if (isAdmin(user)) {
+    window.location.replace('admin.html');
+  } else {
+    window.location.replace('index.html');
   }
+}
 
   // ============================================================
   // ELEMENTOS DEL DOM
