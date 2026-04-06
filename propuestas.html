@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Propuestas — Consejo Estudiantil</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    /* Estilos para el sistema de votación */
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-success {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+    }
+
+    .btn-success:hover {
+      background: rgba(16, 185, 129, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.3);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .proposal-card {
+      transition: all 0.3s ease;
+    }
+
+    .proposal-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0, 200, 240, 0.3);
+    }
+
+    /* Botones de votación */
+    .vote-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .vote-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.375rem 0.75rem;
+      font-size: 0.8rem;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+    }
+    .vote-btn:hover {
+      transform: translateY(-1px);
+    }
+    .vote-btn.upvote:hover { background: rgba(16, 185, 129, 0.2); border-color: #34d399; color: #34d399; }
+    .vote-btn.downvote:hover { background: rgba(239, 68, 68, 0.2); border-color: #f87171; color: #f87171; }
+    .vote-btn.idea:hover { background: rgba(245, 158, 11, 0.2); border-color: #fbbf24; color: #fbbf24; }
+    .vote-btn.active-up { background: rgba(16, 185, 129, 0.3); border-color: #34d399; color: #34d399; }
+    .vote-btn.active-down { background: rgba(239, 68, 68, 0.3); border-color: #f87171; color: #f87171; }
+    .vote-btn.active-idea { background: rgba(245, 158, 11, 0.3); border-color: #fbbf24; color: #fbbf24; }
+    
+    .vote-count {
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 0.25rem;
+    }
+    
+    /* Login notice */
+    .login-notice-vote {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: rgba(0, 200, 240, 0.07);
+      border-radius: 8px;
+      font-size: 0.7rem;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.5);
+    }
+  </style>
+</head>
+<body>
+<div id="toast-container"></div>
+
+<header class="site-header">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">🎓</div>
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">Consejo Estudiantil</span>
+        <span class="nav-logo-sub">Instituto Pedagógico</span>
+      </div>
+    </a>
+    <nav class="nav-links" id="nav-links">
+      <a href="index.html"      class="nav-link">Inicio</a>
+      <a href="noticias.html"   class="nav-link">Noticias</a>
+      <a href="eventos.html"    class="nav-link">Eventos</a>
+      <a href="propuestas.html" class="nav-link active">Propuestas</a>
+      <a href="votaciones.html" class="nav-link">Votaciones</a>
+      <a href="contacto.html"   class="nav-link">Contacto</a>
+      <a href="admin.html"      class="nav-admin-btn">⚙ Admin</a>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main class="page-wrapper">
+  <div class="page-hero">
+    <div class="container page-hero-content">
+      <div class="page-hero-icon">💡</div>
+      <h1>Propuestas Estudiantiles</h1>
+      <p>Comparte tus ideas para mejorar el instituto. ¡Vota por las propuestas que más te gusten!</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid-2" style="gap:3rem;align-items:start">
+
+        <!-- FORM -->
+        <div class="reveal">
+          <div class="admin-section">
+            <div class="admin-section-header">
+              <div class="admin-section-title">✍️ Nueva Propuesta</div>
+            </div>
+            <div class="admin-section-body">
+              <div class="alert info mb-3">
+                <span class="alert-icon">ℹ️</span>
+                <span>Tu propuesta será revisada por el Consejo. <strong>Los estudiantes pueden votar por tu propuesta</strong> para mostrar su apoyo.</span>
+              </div>
+              <form id="form-propuesta" novalidate>
+                <div class="form-group">
+                  <label class="form-label" for="p-titulo">Título de la propuesta <span class="req">*</span></label>
+                  <input class="form-control" type="text" id="p-titulo" name="titulo"
+                         placeholder="Ej: Mejora del laboratorio de cómputo" maxlength="100">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label" for="p-autor">Tu nombre</label>
+                    <input class="form-control" type="text" id="p-autor" name="autor"
+                           placeholder="Nombre (opcional)">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="p-carrera">Carrera / Especialidad</label>
+                    <input class="form-control" type="text" id="p-carrera" name="carrera"
+                           placeholder="Ej: Educación Inicial">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="p-categoria">Categoría <span class="req">*</span></label>
+                  <select class="form-control" id="p-categoria" name="categoria">
+                    <option value="">Seleccionar…</option>
+                    <option value="Académico">Académico</option>
+                    <option value="Infraestructura">Infraestructura</option>
+                    <option value="Bienestar">Bienestar estudiantil</option>
+                    <option value="Cultural">Cultural</option>
+                    <option value="Deportivo">Deportivo</option>
+                    <option value="Servicios">Servicios</option>
+                    <option value="General">General</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="p-contenido">Descripción detallada <span class="req">*</span></label>
+                  <textarea class="form-control" id="p-contenido" name="contenido" rows="5"
+                            placeholder="Describe tu propuesta con el mayor detalle posible. ¿Cuál es el problema? ¿Qué solución propones? ¿Cómo beneficiaría a los estudiantes?" maxlength="1000"></textarea>
+                  <div class="char-counter" id="counter-contenido">0 / 1000</div>
+                </div>
+                <button class="btn btn-primary w-full btn-lg" type="submit">
+                  💡 Enviar propuesta
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- RECENT PUBLIC PROPOSALS WITH VOTING -->
+        <div class="reveal delay-2">
+          <div class="mb-3">
+            <div class="section-eyebrow">Comunidad</div>
+            <h3>Propuestas recientes</h3>
+            <p class="text-muted mt-1">Vota por las propuestas que quieras que el Consejo priorice</p>
+          </div>
+          <div id="propuestas-publicas" style="display:flex;flex-direction:column;gap:1rem"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" style="background:rgba(255,255,255,0.02)">
+    <div class="container">
+      <div class="text-center mb-4 reveal">
+        <div class="section-eyebrow">Proceso</div>
+        <h2>¿Cómo funciona?</h2>
+      </div>
+      <div class="grid-3">
+        <div class="feature-item reveal delay-1" style="text-align:center;align-items:center">
+          <div class="feature-icon blue">📝</div>
+          <div class="feature-title">1. Envías tu propuesta</div>
+          <p class="feature-desc">Rellena el formulario con tu idea y todos los detalles relevantes.</p>
+        </div>
+        <div class="feature-item reveal delay-2" style="text-align:center;align-items:center">
+          <div class="feature-icon gold">🗳️</div>
+          <div class="feature-title">2. La comunidad vota</div>
+          <p class="feature-desc">Otros estudiantes pueden apoyar, rechazar o sugerir mejoras a tu propuesta.</p>
+        </div>
+        <div class="feature-item reveal delay-3" style="text-align:center;align-items:center">
+          <div class="feature-icon green">✅</div>
+          <div class="feature-title">3. El Consejo evalúa</div>
+          <p class="feature-desc">Las propuestas con más apoyo se revisan y gestionan prioritariamente.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2024 Consejo Estudiantil — Instituto Pedagógico</span>
+      <span>Hecho con <span class="footer-bottom-heart">♥</span> por y para los estudiantes</span>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  import './js/main.js';
+  import { db, auth } from './js/firebase-config.js';
+  import {
+    collection, addDoc, serverTimestamp, query, orderBy, onSnapshot,
+    doc, updateDoc, increment, getDoc
+  } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  import { toastSuccess, toastError } from './js/ui.js';
+  import { initCharCounter, sanitize, formatDate } from './js/main.js';
+
+  let currentUser = null;
+
+  // Storage para votos de propuestas
+  function getVoteStorage() {
+    return JSON.parse(localStorage.getItem('votos_propuestas') || '{}');
+  }
+  
+  function saveVote(propuestaId, tipo) {
+    const storage = getVoteStorage();
+    storage[propuestaId] = tipo;
+    localStorage.setItem('votos_propuestas', JSON.stringify(storage));
+  }
+  
+  function getMyVote(propuestaId) {
+    return getVoteStorage()[propuestaId] || null;
+  }
+
+  // Inicializar contador de caracteres
+  initCharCounter(
+    document.getElementById('p-contenido'),
+    document.getElementById('counter-contenido'),
+    1000
+  );
+
+  // Enviar propuesta
+  const form = document.getElementById('form-propuesta');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const titulo = document.getElementById('p-titulo').value.trim();
+      const autor = document.getElementById('p-autor').value.trim() || 'Anónimo';
+      const carrera = document.getElementById('p-carrera').value.trim();
+      const categoria = document.getElementById('p-categoria').value;
+      const contenido = document.getElementById('p-contenido').value.trim();
+      
+      if (!titulo) {
+        toastError('Error', 'El título es requerido');
+        return;
+      }
+      if (!categoria) {
+        toastError('Error', 'Selecciona una categoría');
+        return;
+      }
+      if (!contenido) {
+        toastError('Error', 'La descripción es requerida');
+        return;
+      }
+      
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> Enviando...';
+      
+      try {
+        const data = {
+          titulo,
+          autor,
+          carrera: carrera || '',
+          categoria,
+          contenido,
+          estado: 'Pendiente',
+          fechaCreacion: serverTimestamp(),
+          // Estructura de votos
+          votos: {
+            '👍': 0,
+            '👎': 0,
+            '💡': 0
+          },
+          votantes: {} // Para evitar votos duplicados por usuario
+        };
+        
+        await addDoc(collection(db, 'propuestas'), data);
+        toastSuccess('¡Propuesta enviada!', 'Gracias por participar. El Consejo la revisará pronto.');
+        form.reset();
+      } catch (error) {
+        console.error('Error al enviar propuesta:', error);
+        toastError('Error', 'No se pudo enviar la propuesta');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '💡 Enviar propuesta';
+      }
+    });
+  }
+
+  // Función para votar
+  async function votarPropuesta(propuestaId, tipo) {
+    if (!currentUser) {
+      toastError('Inicia sesión', 'Debes iniciar sesión para votar');
+      return;
+    }
+    
+    const myVote = getMyVote(propuestaId);
+    if (myVote) {
+      toastError('Ya votaste', 'Solo puedes votar una vez por propuesta');
+      return;
+    }
+    
+    try {
+      const propuestaRef = doc(db, 'propuestas', propuestaId);
+      const propuestaDoc = await getDoc(propuestaRef);
+      
+      if (!propuestaDoc.exists()) {
+        toastError('Error', 'Propuesta no encontrada');
+        return;
+      }
+      
+      const propuesta = propuestaDoc.data();
+      
+      // Verificar si ya votó (seguridad)
+      if (propuesta.votantes && propuesta.votantes[currentUser.uid]) {
+        toastError('Ya votaste', 'Ya has votado esta propuesta');
+        return;
+      }
+      
+      // Actualizar votos
+      const votosActualizados = { ...propuesta.votos };
+      votosActualizados[tipo] = (votosActualizados[tipo] || 0) + 1;
+      
+      await updateDoc(propuestaRef, {
+        [`votos.${tipo}`]: increment(1),
+        [`votantes.${currentUser.uid}`]: tipo
+      });
+      
+      saveVote(propuestaId, tipo);
+      toastSuccess('¡Voto registrado!', `Has votado con ${tipo === '👍' ? 'apoyo' : tipo === '👎' ? 'en contra' : 'una sugerencia'}`);
+      
+    } catch (error) {
+      console.error('Error al votar:', error);
+      toastError('Error', 'No se pudo registrar tu voto');
+    }
+  }
+
+  // Cargar propuestas públicas en tiempo real
+  function loadPublicPropuestas(container) {
+    if (!container) return;
+    
+    const q = query(collection(db, 'propuestas'), orderBy('fechaCreacion', 'desc'));
+    
+    onSnapshot(q, (snapshot) => {
+      if (snapshot.empty) {
+        container.innerHTML = `
+          <div style="text-align:center;padding:3rem;background:rgba(10,22,40,0.5);border-radius:20px">
+            <div style="font-size:2rem;margin-bottom:0.5rem">💡</div>
+            <p class="text-muted">No hay propuestas aún. ¡Sé el primero en compartir una idea!</p>
+          </div>`;
+        return;
+      }
+      
+      container.innerHTML = '';
+      snapshot.forEach(doc => {
+        const propuesta = { id: doc.id, ...doc.data() };
+        const votos = propuesta.votos || { '👍': 0, '👎': 0, '💡': 0 };
+        const totalVotos = (votos['👍'] || 0) + (votos['👎'] || 0) + (votos['💡'] || 0);
+        const porcentajeApoyo = totalVotos > 0 ? Math.round(((votos['👍'] || 0) / totalVotos) * 100) : 0;
+        
+        const myVote = getMyVote(propuesta.id);
+        
+        const card = document.createElement('div');
+        card.className = 'proposal-card';
+        card.innerHTML = `
+          <div class="proposal-card-header">
+            <div>
+              <div class="proposal-card-title">${sanitize(propuesta.titulo)}</div>
+              <div class="text-muted" style="font-size:0.7rem">
+                👤 ${sanitize(propuesta.autor || 'Anónimo')} · 
+                📚 ${sanitize(propuesta.carrera || 'No especificada')} · 
+                📅 ${formatDate(propuesta.fechaCreacion)}
+              </div>
+            </div>
+            <span class="badge badge-${propuesta.estado === 'Aprobada' ? 'green' : propuesta.estado === 'Rechazada' ? 'red' : 'gold'}">
+              ${propuesta.estado || 'Pendiente'}
+            </span>
+          </div>
+          <div class="proposal-card-body">
+            <p>${sanitize(propuesta.contenido)}</p>
+          </div>
+          <div class="proposal-card-footer">
+            <div class="vote-buttons">
+              <button class="vote-btn upvote ${myVote === '👍' ? 'active-up' : ''}" data-voto="👍">
+                👍 <span class="vote-count">${votos['👍'] || 0}</span>
+              </button>
+              <button class="vote-btn downvote ${myVote === '👎' ? 'active-down' : ''}" data-voto="👎">
+                👎 <span class="vote-count">${votos['👎'] || 0}</span>
+              </button>
+              <button class="vote-btn idea ${myVote === '💡' ? 'active-idea' : ''}" data-voto="💡">
+                💡 <span class="vote-count">${votos['💡'] || 0}</span>
+              </button>
+            </div>
+            <div style="font-size:0.7rem;color:#64748b">
+              📊 ${totalVotos} voto${totalVotos !== 1 ? 's' : ''} · ${porcentajeApoyo}% apoyo
+            </div>
+          </div>
+          ${!currentUser ? '<div class="login-notice-vote">🔐 Inicia sesión para votar</div>' : ''}
+        `;
+        
+        // Agregar eventos a los botones de voto
+        if (currentUser && !myVote) {
+          const btns = card.querySelectorAll('.vote-btn');
+          btns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const tipo = btn.dataset.voto;
+              votarPropuesta(propuesta.id, tipo);
+            });
+          });
+        }
+        
+        container.appendChild(card);
+      });
+    }, (error) => {
+      console.error('Error loading propuestas:', error);
+      container.innerHTML = `<div class="text-muted" style="text-align:center;padding:2rem">Error al cargar propuestas</div>`;
+    });
+  }
+
+  // Auth state
+  onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    const container = document.getElementById('propuestas-publicas');
+    if (container) {
+      loadPublicPropuestas(container);
+    }
+  });
+</script>
+</body>
+</html>

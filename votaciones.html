@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Votaciones — Consejo Estudiantil</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .votacion-card {
+      background: rgba(10, 22, 40, 0.88);
+      border: 1px solid rgba(0, 200, 240, 0.18);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+      transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .votacion-card::before {
+      content: '';
+      display: block;
+      height: 2px;
+      background: linear-gradient(90deg, #00c8f0, #8b5cf6);
+    }
+    .votacion-card.ya-votada { border-color: rgba(139, 92, 246, 0.22); }
+    .votacion-card.ya-votada::before { background: linear-gradient(90deg, #8b5cf6, #00c8f0); }
+    .votacion-card:hover {
+      border-color: rgba(0, 200, 240, 0.42);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 48px rgba(0,0,0,.5), 0 0 0 1px rgba(0,200,240,.18);
+    }
+    .votacion-card-inner { padding: 1.5rem; }
+
+    .votacion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .votacion-eyebrow {
+      font-size: 0.68rem;
+      font-family: 'Fira Code', monospace;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #00c8f0;
+      margin-bottom: 0.35rem;
+    }
+    .votacion-eyebrow.ya-votada { color: #a78bfa; }
+    .votacion-titulo {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.35;
+      margin: 0;
+    }
+    .votacion-descripcion {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,.5);
+      margin: 0.5rem 0 1rem;
+      line-height: 1.6;
+    }
+    .badge-activa {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      background: rgba(16,185,129,.12);
+      border: 1px solid rgba(16,185,129,.25);
+      border-radius: 99px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #34d399;
+      font-family: 'Fira Code', monospace;
+      white-space: nowrap;
+    }
+    .badge-activa::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: blink 2s ease infinite;
+    }
+    .badge-votado {
+      flex-shrink: 0;
+      padding: 4px 10px;
+      background: rgba(16,185,129,.08);
+      border: 1px solid rgba(16,185,129,.18);
+      border-radius: 99px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #34d399;
+      font-family: 'Fira Code', monospace;
+      white-space: nowrap;
+    }
+    .opciones-votar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-bottom: 1.1rem;
+    }
+    .btn-votar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      background: rgba(0,200,240,.05);
+      border: 1px solid rgba(0,200,240,.18);
+      border-radius: 12px;
+      color: rgba(255,255,255,.82);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .btn-votar::before {
+      content: '';
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,200,240,.35);
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .btn-votar:hover {
+      background: rgba(0,200,240,.1);
+      border-color: rgba(0,200,240,.45);
+      color: #fff;
+      transform: translateX(4px);
+    }
+    .btn-votar.selected {
+      background: rgba(0,200,240,.1);
+      border-color: #00c8f0;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 0 16px rgba(0,200,240,.15);
+    }
+    .btn-votar.selected::before {
+      border-color: #00c8f0;
+      background: #00c8f0;
+      box-shadow: 0 0 8px rgba(0,200,240,.5);
+    }
+    .btn-confirmar-voto {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #00a3c4, #00c8f0);
+      border: none;
+      border-radius: 12px;
+      color: #04080F;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .btn-confirmar-voto:hover {
+      box-shadow: 0 0 28px rgba(0,200,240,.45);
+      transform: translateY(-1px);
+    }
+    .btn-confirmar-voto:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .opciones-resultado {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      margin-bottom: 0.75rem;
+    }
+    .opcion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.35rem;
+      gap: 0.5rem;
+    }
+    .opcion-label {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,.65);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .opcion-label.mi-voto { color: #fff; font-weight: 600; }
+    .opcion-mi-voto-tag {
+      font-size: 0.65rem;
+      padding: 2px 7px;
+      background: rgba(16,185,129,.12);
+      border: 1px solid rgba(16,185,129,.25);
+      border-radius: 99px;
+      color: #34d399;
+      font-family: 'Fira Code', monospace;
+      flex-shrink: 0;
+    }
+    .opcion-pct {
+      font-size: 0.82rem;
+      font-family: 'Fira Code', monospace;
+      color: #00c8f0;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .opcion-pct.dim { color: rgba(255,255,255,.35); }
+    .barra-progreso {
+      height: 7px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.07);
+      overflow: hidden;
+    }
+    .barra-llenado {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #00c8f0, #8b5cf6);
+      transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
+    }
+    .barra-llenado.dim { background: rgba(255,255,255,.15); }
+    .votacion-footer {
+      margin-top: 1rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid rgba(255,255,255,.07);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .votacion-footer span {
+      font-size: 0.72rem;
+      font-family: 'Fira Code', monospace;
+      color: rgba(255,255,255,.3);
+    }
+    .login-notice {
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      background: rgba(0,200,240,.07);
+      border: 1px solid rgba(0,200,240,.18);
+      border-radius: 12px;
+      text-align: center;
+      font-size: 0.83rem;
+      color: rgba(255,255,255,.5);
+    }
+    .votaciones-empty {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: rgba(10,22,40,.4);
+      border: 1px solid rgba(0,200,240,.1);
+      border-radius: 20px;
+    }
+    .votaciones-empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: .5; display: block; }
+    .votaciones-empty p { color: rgba(255,255,255,.4); font-size: .9rem; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    
+    /* Corrección responsive */
+    @media (max-width: 640px) {
+      .votacion-header { flex-direction: column; align-items: flex-start; }
+      .opcion-label { font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+<div id="toast-container"></div>
+
+<header class="site-header">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">🎓</div>
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">Consejo Estudiantil</span>
+        <span class="nav-logo-sub">Instituto Pedagógico</span>
+      </div>
+    </a>
+    <nav class="nav-links" id="nav-links">
+      <a href="index.html"      class="nav-link">Inicio</a>
+      <a href="noticias.html"   class="nav-link">Noticias</a>
+      <a href="eventos.html"    class="nav-link">Eventos</a>
+      <a href="propuestas.html" class="nav-link">Propuestas</a>
+      <a href="votaciones.html" class="nav-link active">Votaciones</a>
+      <a href="contacto.html"   class="nav-link">Contacto</a>
+      <a href="admin.html"      class="nav-admin-btn">⚙ Admin</a>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main class="page-wrapper">
+  <div class="page-hero">
+    <div class="container page-hero-content">
+      <div class="page-hero-icon">🗳️</div>
+      <h1>Votaciones Estudiantiles</h1>
+      <p>Tu voto cuenta. Participa en las decisiones que afectan a toda la comunidad.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="alert info reveal mb-4">
+        <span class="alert-icon">ℹ️</span>
+        <div>
+          <strong>Tu participación es anónima.</strong> Solo puedes votar una vez por votación.
+          Los resultados se actualizan en tiempo real.
+        </div>
+      </div>
+
+      <div class="section-header reveal">
+        <div>
+          <div class="section-eyebrow">En curso</div>
+          <h2 class="section-title">Votaciones Activas</h2>
+        </div>
+        <span class="badge badge-green anim-pulse">● En vivo</span>
+      </div>
+
+      <div id="votaciones-list"></div>
+    </div>
+  </section>
+
+  <section class="section" style="background:rgba(255,255,255,0.02)">
+    <div class="container">
+      <div class="text-center mb-4 reveal">
+        <div class="section-eyebrow">¿Por qué votar?</div>
+        <h2>Tu voz importa</h2>
+      </div>
+      <div class="grid-3">
+        <div class="feature-item reveal delay-1" style="text-align:center">
+          <div class="feature-icon blue">🏛️</div>
+          <div class="feature-title">Democracia real</div>
+          <p class="feature-desc">Cada votación influye directamente en las decisiones del Consejo.</p>
+        </div>
+        <div class="feature-item reveal delay-2" style="text-align:center">
+          <div class="feature-icon gold">🔒</div>
+          <div class="feature-title">Anónimo y seguro</div>
+          <p class="feature-desc">Tu voto es completamente anónimo.</p>
+        </div>
+        <div class="feature-item reveal delay-3" style="text-align:center">
+          <div class="feature-icon green">⚡</div>
+          <div class="feature-title">Resultados en tiempo real</div>
+          <p class="feature-desc">Los resultados se actualizan al instante.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2024 Consejo Estudiantil — Instituto Pedagógico</span>
+      <span>Hecho con <span class="footer-bottom-heart">♥</span> por y para los estudiantes</span>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  import './js/main.js';
+  import { db, auth } from './js/firebase-config.js';
+  import {
+    collection, getDocs, query, where,
+    doc, updateDoc, increment
+  } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  import { formatDate, sanitize } from './js/main.js';
+  import { toastSuccess, toastError } from './js/ui.js';
+
+  const container = document.getElementById('votaciones-list');
+  let currentUser = null;
+
+  /* ============================================================
+     CORRECCIÓN: Guardar por ÍNDICE en lugar de texto
+     ============================================================ */
+  
+  // Estructura del localStorage ahora: { "votacionId": { idx: 0, texto: "Opción A" } }
+  
+  function getStorage() { 
+    return JSON.parse(localStorage.getItem('votos_estudiantiles') || '{}'); 
+  }
+  
+  function guardarVotoLocal(votacionId, idx, texto) { 
+    const storage = getStorage(); 
+    storage[votacionId] = { idx: idx, texto: texto }; 
+    localStorage.setItem('votos_estudiantiles', JSON.stringify(storage)); 
+  }
+  
+  function obtenerMiVotoLocal(votacionId) { 
+    return getStorage()[votacionId] || null; 
+  }
+
+  /* Normalizar opciones (array u objeto de Firestore) */
+  function normalizarOpciones(opciones) {
+    if (!opciones) return [];
+    if (Array.isArray(opciones)) return opciones;
+    if (typeof opciones === 'object') {
+      return Object.values(opciones).map(o => ({ texto: o.texto || o, votos: o.votos || 0 }));
+    }
+    return [];
+  }
+
+  /* Construir una card */
+  function buildCard(votacionId, data) {
+    const opciones = normalizarOpciones(data.opciones);
+    if (!opciones.length) return null;
+
+    const total = opciones.reduce((s, o) => s + (o.votos || 0), 0);
+    const miVotoObj = obtenerMiVotoLocal(votacionId);
+    const yaVoto = miVotoObj !== null;
+    
+    // Verificar si el índice guardado sigue siendo válido (opción aún existe)
+    let miVotoIdx = null;
+    let miVotoTexto = null;
+    if (yaVoto && miVotoObj.idx < opciones.length) {
+      miVotoIdx = miVotoObj.idx;
+      miVotoTexto = opciones[miVotoIdx]?.texto;
+      // Si el texto cambió pero el índice es el mismo, actualizamos referencia
+      if (miVotoTexto && miVotoTexto !== miVotoObj.texto) {
+        guardarVotoLocal(votacionId, miVotoIdx, miVotoTexto);
+      }
+    }
+    
+    const puedeVotar = currentUser && !yaVoto;
+    const yaVotoValido = yaVoto && miVotoIdx !== null;
+
+    /* Badge y eyebrow */
+    const eyebrowCls = yaVotoValido ? 'votacion-eyebrow ya-votada' : 'votacion-eyebrow';
+    const eyebrowTxt = yaVotoValido ? 'Ya participaste' : 'Votación activa';
+    const badgeHtml = yaVotoValido
+      ? `<span class="badge-votado">✓ Votaste</span>`
+      : `<span class="badge-activa">En vivo</span>`;
+
+    /* Bloque de opciones */
+    let opcionesHtml = '';
+
+    if (puedeVotar) {
+      /* Puede votar — radio interactivo */
+      opcionesHtml = `
+        <div class="opciones-votar" id="opts-${votacionId}">
+          ${opciones.map((opt, idx) => `
+            <button class="btn-votar" data-idx="${idx}" data-texto="${sanitize(opt.texto)}">
+              ${sanitize(opt.texto)}
+            </button>`).join('')}
+        </div>
+        <button class="btn-confirmar-voto" id="confirm-${votacionId}" disabled>
+          Selecciona una opción para votar
+        </button>`;
+
+    } else if (yaVotoValido) {
+      /* Ya votó — barras de resultado */
+      opcionesHtml = `
+        <div class="opciones-resultado">
+          ${opciones.map((opt, idx) => {
+            const votos = opt.votos || 0;
+            const pct = total > 0 ? Math.round(votos / total * 100) : 0;
+            const esMio = idx === miVotoIdx;
+            return `
+              <div class="opcion-item">
+                <div class="opcion-header">
+                  <span class="opcion-label${esMio ? ' mi-voto' : ''}">
+                    ${esMio ? '<span class="opcion-mi-voto-tag">Tu voto</span>' : ''}
+                    ${sanitize(opt.texto)}
+                  </span>
+                  <span class="opcion-pct${esMio ? '' : ' dim'}">${pct}%</span>
+                </div>
+                <div class="barra-progreso">
+                  <div class="barra-llenado${esMio ? '' : ' dim'}" style="width:${pct}%"></div>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>`;
+
+    } else {
+      /* Sin sesión o voto inválido (opción eliminada) — resultados bloqueados */
+      opcionesHtml = `
+        <div class="opciones-resultado">
+          ${opciones.map(opt => {
+            const pct = total > 0 ? Math.round((opt.votos || 0) / total * 100) : 0;
+            return `
+              <div class="opcion-item">
+                <div class="opcion-header">
+                  <span class="opcion-label">${sanitize(opt.texto)}</span>
+                  <span class="opcion-pct dim">${pct}%</span>
+                </div>
+                <div class="barra-progreso">
+                  <div class="barra-llenado dim" style="width:${pct}%"></div>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>
+        ${!currentUser ? '<div class="login-notice">🔐 Inicia sesión para emitir tu voto</div>' : 
+                         '<div class="login-notice">⚠️ Tu voto anterior ya no está disponible. Contacta al administrador.</div>'}`
+    }
+
+    /* HTML completo de la card */
+    const card = document.createElement('div');
+    card.className = `votacion-card${yaVotoValido ? ' ya-votada' : ''} reveal`;
+    card.dataset.vid = votacionId;
+    card.innerHTML = `
+      <div class="votacion-card-inner">
+        <div class="votacion-header">
+          <div>
+            <div class="${eyebrowCls}">${eyebrowTxt}</div>
+            <div class="votacion-titulo">${sanitize(data.pregunta || 'Sin pregunta')}</div>
+          </div>
+          ${badgeHtml}
+        </div>
+        ${data.descripcion ? `<p class="votacion-descripcion">${sanitize(data.descripcion)}</p>` : ''}
+        ${opcionesHtml}
+        <div class="votacion-footer">
+          <span>👥 ${total} voto${total !== 1 ? 's' : ''} totales</span>
+          <span>📅 ${formatDate(data.fechaCreacion)}</span>
+        </div>
+      </div>`;
+
+    /* Interactividad si puede votar */
+    if (puedeVotar) {
+      const confirmBtn = card.querySelector(`#confirm-${votacionId}`);
+      let selIdx = null, selTexto = null;
+
+      card.querySelectorAll('.btn-votar').forEach(btn => {
+        btn.addEventListener('click', () => {
+          card.querySelectorAll('.btn-votar').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selIdx = parseInt(btn.dataset.idx);
+          selTexto = btn.dataset.texto;
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = `Votar por "${selTexto}"`;
+        });
+      });
+
+      confirmBtn.addEventListener('click', async () => {
+        if (selIdx === null) return;
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Registrando…';
+        await registrarVoto(votacionId, selIdx, selTexto, card, data, opciones, total);
+      });
+    }
+
+    return card;
+  }
+
+  /* Registrar voto en Firestore */
+  async function registrarVoto(votacionId, idx, texto, cardEl, data, opcionesViejas, totalViejo) {
+    try {
+      await updateDoc(doc(db, 'votaciones', votacionId), {
+        [`opciones.${idx}.votos`]: increment(1)
+      });
+      
+      // GUARDAR POR ÍNDICE (corrección principal)
+      guardarVotoLocal(votacionId, idx, texto);
+      toastSuccess('¡Voto registrado!', `Votaste por: "${texto}"`);
+
+      /* Reemplazar card sin recargar toda la lista */
+      const opcionesNuevas = opcionesViejas.map((o, i) => ({
+        ...o,
+        votos: (o.votos || 0) + (i === idx ? 1 : 0)
+      }));
+      const nuevaCard = buildCard(votacionId, { ...data, opciones: opcionesNuevas });
+      if (nuevaCard) {
+        cardEl.replaceWith(nuevaCard);
+        nuevaCard.classList.add('visible');
+      }
+    } catch (err) {
+      console.error(err);
+      toastError('Error al votar', 'Intenta nuevamente en unos momentos.');
+      const confirmBtn = cardEl.querySelector(`#confirm-${votacionId}`);
+      if (confirmBtn) { 
+        confirmBtn.disabled = false; 
+        confirmBtn.textContent = `Votar por "${texto}"`; 
+      }
+    }
+  }
+
+  /* Cargar votaciones activas */
+  async function cargarVotaciones() {
+    if (!container) return;
+    
+    container.innerHTML = `
+      <div style="text-align:center;padding:3rem;color:rgba(255,255,255,.35);
+                  font-family:'Fira Code',monospace;font-size:.85rem;letter-spacing:.05em">
+        📡 cargando_votaciones…
+      </div>`;
+    try {
+      const snap = await getDocs(query(collection(db, 'votaciones'), where('activa', '==', true)));
+      if (snap.empty) {
+        container.innerHTML = `
+          <div class="votaciones-empty">
+            <span class="votaciones-empty-icon">🗳️</span>
+            <h3 style="color:rgba(255,255,255,.45);font-size:1rem;margin-bottom:.5rem">Sin votaciones activas</h3>
+            <p>Cuando el Consejo publique una votación, aparecerá aquí.</p>
+          </div>`;
+        return;
+      }
+      container.innerHTML = '';
+      snap.forEach(d => {
+        const card = buildCard(d.id, d.data());
+        if (card) {
+          container.appendChild(card);
+          requestAnimationFrame(() => card.classList.add('visible'));
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      container.innerHTML = `
+        <div class="votaciones-empty">
+          <span class="votaciones-empty-icon">⚠️</span>
+          <p style="color:rgba(244,63,94,.7);font-size:.88rem">${err.message}</p>
+        </div>`;
+    }
+  }
+
+  /* Auth */
+  onAuthStateChanged(auth, user => { 
+    currentUser = user; 
+    cargarVotaciones(); 
+  });
+</script>
+</body>
+</html>

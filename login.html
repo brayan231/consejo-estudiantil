@@ -1,0 +1,575 @@
+<!-- login.html - Login Unificado con Firebase -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión — Consejo Estudiantil</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --secondary: #00c8f0;
+      --dark: #0a0f1a;
+      --darker: #050a14;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+    }
+
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at 30% 40%, #0a0f1a, #03060c);
+      position: relative;
+    }
+    
+    .login-page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0, 200, 240, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 200, 240, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+    
+    .login-card {
+      background: rgba(10, 22, 40, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 200, 240, 0.2);
+      border-radius: 24px;
+      padding: 2.5rem;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 200, 240, 0.1);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #00c8f0, #8b5cf6, #4f46e5);
+      border-radius: 24px 24px 0 0;
+    }
+    
+    .login-logo {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .login-logo-icon {
+      font-size: 3rem;
+      background: linear-gradient(135deg, #00c8f0, #8b5cf6);
+      width: 70px;
+      height: 70px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      box-shadow: 0 0 30px rgba(0, 200, 240, 0.3);
+    }
+    
+    .login-title {
+      text-align: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #fff, #00c8f0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    .login-sub {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 2rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    
+    .password-wrapper {
+      position: relative;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 200, 240, 0.2);
+      border-radius: 12px;
+      color: #fff;
+      transition: all 0.2s;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: #00c8f0;
+      box-shadow: 0 0 0 3px rgba(0, 200, 240, 0.1);
+    }
+    
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+      font-size: 1.1rem;
+    }
+    
+    .toggle-password:hover {
+      opacity: 1;
+    }
+    
+    .form-error {
+      color: #ef4444;
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+    
+    .form-error.show {
+      display: block;
+    }
+    
+    .input-error {
+      border-color: #ef4444 !important;
+      background-color: rgba(239, 68, 68, 0.1) !important;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      font-family: inherit;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #00c8f0, #8b5cf6);
+      color: #fff;
+      font-weight: 600;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(0, 200, 240, 0.4);
+    }
+    
+    .btn-google {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .btn-google:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+    
+    .btn-google img {
+      width: 20px;
+      height: 20px;
+    }
+    
+    .btn-loading {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #4f46e5;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 1.5rem 0;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+    
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .divider span {
+      margin: 0 10px;
+    }
+    
+    .info-message {
+      background: rgba(0, 200, 240, 0.1);
+      border-left: 3px solid #00c8f0;
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.75rem;
+      color: #00c8f0;
+    }
+    
+    .text-center {
+      text-align: center;
+    }
+    
+    .mt-3 {
+      margin-top: 1rem;
+    }
+    
+    .text-muted {
+      color: var(--text-muted);
+    }
+    
+    a {
+      color: #00c8f0;
+      text-decoration: none;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div id="toast-container"></div>
+
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">🎓</div>
+    </div>
+    <h1 class="login-title">Consejo Estudiantil</h1>
+    <p class="login-sub">Inicia sesión para participar activamente</p>
+
+    <div class="info-message">
+      💡 Usa tu correo institucional o cuenta de Google
+    </div>
+    
+    <form id="login-form">
+      <div class="form-group">
+        <label class="form-label">Correo electrónico</label>
+        <input class="form-control" type="email" id="email" name="email" placeholder="correo@instituto.edu" autocomplete="email">
+        <div class="form-error" id="email-error"></div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <div class="password-wrapper">
+          <input class="form-control" type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password">
+          <span class="toggle-password" onclick="togglePassword()">👁️</span>
+        </div>
+        <div class="form-error" id="password-error"></div>
+      </div>
+      
+      <button class="btn btn-primary" type="submit" id="login-btn">
+        Ingresar
+      </button>
+    </form>
+    
+    <div class="divider">
+      <span>O continúa con</span>
+    </div>
+    
+    <button class="btn btn-google" id="google-btn">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+      Continuar con Google
+    </button>
+    
+    <div class="text-center mt-3">
+      <p class="text-muted">¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { auth, googleProvider } from './js/firebase-config.js';
+  import { 
+    signInWithEmailAndPassword, 
+    signInWithPopup,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  import { toastSuccess, toastError } from './js/ui.js';
+
+  // ============================================================
+  // LISTA DE CORREOS DE ADMINISTRADORES (los que tienes en Firebase)
+  // Agrega aquí TODOS los emails de admin que tengas creados
+  // ============================================================
+  const ADMIN_EMAILS = [
+    "admin@instituto.edu.pe",
+    "bbbaattoo@gmail.com",  // Cambia por tu email real
+    // Agrega más emails de admin aquí
+  ];
+
+  function isAdmin(user) {
+    if (!user || !user.email) return false;
+    return ADMIN_EMAILS.includes(user.email.toLowerCase());
+  }
+
+  function redirectToCorrectPage(user) {
+    console.log('Redirigiendo - Email:', user.email);
+    console.log('¿Es admin?', isAdmin(user));
+    
+    if (isAdmin(user)) {
+      window.location.replace('admin.html');
+    } else {
+      window.location.replace('index.html');
+    }
+  }
+
+  // ============================================================
+  // ELEMENTOS DEL DOM
+  // ============================================================
+  const loginForm = document.getElementById('login-form');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const loginBtn = document.getElementById('login-btn');
+  const googleBtn = document.getElementById('google-btn');
+  const emailError = document.getElementById('email-error');
+  const passwordError = document.getElementById('password-error');
+  
+  let isSubmitting = false;
+
+  function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  function showError(input, errorElement, message) {
+    errorElement.textContent = message;
+    errorElement.classList.add('show');
+    input.classList.add('input-error');
+  }
+
+  function clearErrors() {
+    emailError.classList.remove('show');
+    passwordError.classList.remove('show');
+    emailInput.classList.remove('input-error');
+    passwordInput.classList.remove('input-error');
+  }
+
+  function setLoading(btn, loading, originalText) {
+    isSubmitting = loading;
+    if (loading) {
+      btn.disabled = true;
+      btn.classList.add('btn-loading');
+      btn.innerHTML = '<span class="loading-spinner"></span>Verificando...';
+    } else {
+      btn.disabled = false;
+      btn.classList.remove('btn-loading');
+      btn.innerHTML = originalText;
+    }
+  }
+
+  // Validaciones en tiempo real
+  if (emailInput) {
+    emailInput.addEventListener('input', () => {
+      if (emailInput.value && !validateEmail(emailInput.value)) {
+        showError(emailInput, emailError, '⚠️ Ingresa un correo electrónico válido');
+      } else {
+        emailError.classList.remove('show');
+        emailInput.classList.remove('input-error');
+      }
+    });
+  }
+
+  if (passwordInput) {
+    passwordInput.addEventListener('input', () => {
+      if (passwordInput.value && passwordInput.value.length < 6) {
+        showError(passwordInput, passwordError, '⚠️ La contraseña debe tener al menos 6 caracteres');
+      } else {
+        passwordError.classList.remove('show');
+        passwordInput.classList.remove('input-error');
+      }
+    });
+  }
+
+  // ============================================================
+  // LOGIN CON EMAIL/PASSWORD
+  // ============================================================
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (isSubmitting) return;
+      
+      clearErrors();
+      
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      
+      let hasError = false;
+      
+      if (!email) {
+        showError(emailInput, emailError, '⚠️ El correo electrónico es requerido');
+        hasError = true;
+      } else if (!validateEmail(email)) {
+        showError(emailInput, emailError, '⚠️ Ingresa un correo electrónico válido');
+        hasError = true;
+      }
+      
+      if (!password) {
+        showError(passwordInput, passwordError, '⚠️ La contraseña es requerida');
+        hasError = true;
+      }
+      
+      if (hasError) return;
+      
+      setLoading(loginBtn, true, 'Ingresar');
+      
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        console.log('✅ Usuario autenticado:', user.email);
+        
+        if (isAdmin(user)) {
+          toastSuccess('Bienvenido Administrador', 'Acceso al panel de control');
+        } else {
+          toastSuccess('¡Bienvenido!', `Hola ${user.email}`);
+        }
+        
+        setTimeout(() => {
+          redirectToCorrectPage(user);
+        }, 500);
+        
+      } catch (err) {
+        console.error('❌ Login error:', err.code);
+        let mensaje = 'Credenciales incorrectas';
+        switch (err.code) {
+          case 'auth/user-not-found':
+            mensaje = 'Usuario no encontrado. ¿Necesitas registrarte?';
+            break;
+          case 'auth/wrong-password':
+            mensaje = 'Contraseña incorrecta';
+            break;
+          case 'auth/invalid-email':
+            mensaje = 'Correo electrónico inválido';
+            break;
+          case 'auth/too-many-requests':
+            mensaje = 'Demasiados intentos. Intenta más tarde';
+            break;
+        }
+        toastError('Error de acceso', mensaje);
+        setLoading(loginBtn, false, 'Ingresar');
+      }
+    });
+  }
+
+  // ============================================================
+  // LOGIN CON GOOGLE
+  // ============================================================
+  if (googleBtn) {
+    googleBtn.addEventListener('click', async () => {
+      if (isSubmitting) return;
+      setLoading(googleBtn, true, 'Continuar con Google');
+      
+      try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+        
+        console.log('✅ Usuario Google autenticado:', user.email);
+        
+        if (isAdmin(user)) {
+          toastSuccess('Bienvenido Administrador', 'Acceso al panel de control');
+        } else {
+          toastSuccess('¡Bienvenido!', `Hola ${user.displayName || user.email}`);
+        }
+        
+        setTimeout(() => {
+          redirectToCorrectPage(user);
+        }, 500);
+        
+      } catch (err) {
+        console.error('❌ Google login error:', err.code);
+        toastError('Error', 'No se pudo iniciar sesión con Google');
+        setLoading(googleBtn, false, 'Continuar con Google');
+      }
+    });
+  }
+
+  // ============================================================
+  // ESTADO DE AUTENTICACIÓN
+  // ============================================================
+  let hasRedirected = false;
+  
+  onAuthStateChanged(auth, (user) => {
+    const isLoginPage = window.location.pathname.includes('login.html') || 
+                        window.location.pathname === '/' || 
+                        window.location.pathname === '/index.html';
+    
+    if (user && isLoginPage && !hasRedirected) {
+      hasRedirected = true;
+      console.log('🔄 Sesión activa detectada, redirigiendo...');
+      redirectToCorrectPage(user);
+    }
+  });
+</script>
+
+<script>
+  function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const toggleIcon = event.target;
+    
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleIcon.textContent = '🙈';
+    } else {
+      passwordInput.type = 'password';
+      toggleIcon.textContent = '👁️';
+    }
+  }
+</script>
+</body>
+</html>

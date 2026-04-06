@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eventos — Consejo Estudiantil</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+<div id="toast-container"></div>
+
+<header class="site-header">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">🎓</div>
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">Consejo Estudiantil</span>
+        <span class="nav-logo-sub">Instituto Pedagógico</span>
+      </div>
+    </a>
+    <nav class="nav-links" id="nav-links">
+      <a href="index.html"      class="nav-link">Inicio</a>
+      <a href="noticias.html"   class="nav-link">Noticias</a>
+      <a href="eventos.html"    class="nav-link">Eventos</a>
+      <a href="propuestas.html" class="nav-link">Propuestas</a>
+      <a href="votaciones.html" class="nav-link">Votaciones</a>
+      <a href="contacto.html"   class="nav-link">Contacto</a>
+      <a href="admin.html"      class="nav-admin-btn">⚙ Admin</a>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main class="page-wrapper">
+  <div class="page-hero">
+    <div class="container page-hero-content">
+      <div class="page-hero-icon">📅</div>
+      <h1>Eventos</h1>
+      <p>Calendario de actividades académicas, culturales y deportivas del Instituto</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <!-- Próximo evento destacado -->
+      <div id="next-event-banner" class="reveal mb-4"></div>
+
+      <!-- Filtro tabs -->
+      <div class="reveal">
+        <div id="event-tabs" class="tabs">
+          <button class="tab active" data-tipo="todos">Todos</button>
+          <button class="tab" data-tipo="Académico">Académico</button>
+          <button class="tab" data-tipo="Cultural">Cultural</button>
+          <button class="tab" data-tipo="Deportivo">Deportivo</button>
+          <button class="tab" data-tipo="Social">Social</button>
+          <button class="tab" data-tipo="Institucional">Institucional</button>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="flex gap-2 mb-3 reveal">
+        <div class="search-bar" style="max-width:320px">
+          <span class="search-bar-icon">🔍</span>
+          <input type="text" id="search-eventos" placeholder="Buscar evento…">
+        </div>
+      </div>
+
+      <!-- List -->
+      <div class="grid-2" id="eventos-list"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2024 Consejo Estudiantil — Instituto Pedagógico</span>
+      <span>Hecho con <span class="footer-bottom-heart">♥</span> por y para los estudiantes</span>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  import './js/main.js';
+  import { loadEventos } from './js/eventos.js';
+  import { daysLeft } from './js/main.js';
+  import { db } from './js/firebase-config.js';
+  import { collection, query, where, orderBy, limit, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+  // Cargar eventos con filtro por tipo
+  let currentTipo = 'todos';
+  let currentSearch = '';
+  let eventosData = [];
+
+  const container = document.getElementById('eventos-list');
+  const searchInput = document.getElementById('search-eventos');
+
+  // Función para cargar y filtrar eventos
+  async function cargarEventos() {
+    try {
+      const q = query(collection(db, 'eventos'), orderBy('fecha', 'desc'));
+      const snap = await getDocs(q);
+      
+      if (snap.empty) {
+        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem">📅 No hay eventos programados</div>';
+        return;
+      }
+      
+      eventosData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      filtrarYMostrar();
+    } catch (error) {
+      console.error('Error cargando eventos:', error);
+      container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:red">Error al cargar eventos</div>';
+    }
+  }
+
+  function filtrarYMostrar() {
+    let filtrados = [...eventosData];
+    
+    // Filtrar por tipo
+    if (currentTipo !== 'todos') {
+      filtrados = filtrados.filter(e => e.tipo === currentTipo);
+    }
+    
+    // Filtrar por búsqueda
+    if (currentSearch) {
+      filtrados = filtrados.filter(e => 
+        e.titulo?.toLowerCase().includes(currentSearch) ||
+        e.descripcion?.toLowerCase().includes(currentSearch) ||
+        e.lugar?.toLowerCase().includes(currentSearch)
+      );
+    }
+    
+    // Mostrar resultados
+    if (filtrados.length === 0) {
+      container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem">🔍 No se encontraron eventos</div>';
+      return;
+    }
+    
+    container.innerHTML = filtrados.map(evento => {
+      const fechaObj = evento.fecha?.toDate ? evento.fecha.toDate() : new Date(evento.fecha);
+      const dia = fechaObj.getDate();
+      const mes = fechaObj.toLocaleDateString('es-PE', { month: 'short' }).toUpperCase();
+      
+      const tipoColors = {
+        'Académico': 'blue',
+        'Cultural': 'purple',
+        'Deportivo': 'green',
+        'Social': 'orange',
+        'Institucional': 'gold'
+      };
+      const tipoColor = tipoColors[evento.tipo] || 'gray';
+      
+      return `
+        <div class="card" style="background:rgba(10,22,40,0.6);border:1px solid var(--border);border-radius:20px;overflow:hidden">
+          <div style="display:flex;gap:1rem;flex-wrap:wrap">
+            <div style="background:linear-gradient(135deg,var(--cyan-600),var(--violet-600));border-radius:16px;padding:0.75rem;text-align:center;min-width:80px">
+              <div style="font-size:1.8rem;font-weight:800;color:white">${dia}</div>
+              <div style="font-size:0.7rem;color:rgba(255,255,255,0.8)">${mes}</div>
+            </div>
+            <div style="padding:1rem;flex:1">
+              <div class="flex gap-1 flex-wrap mb-1">
+                <span class="badge badge-${tipoColor}">${evento.tipo || 'General'}</span>
+              </div>
+              <h3 style="margin-bottom:0.25rem;font-size:1.1rem">${evento.titulo || 'Sin título'}</h3>
+              <div class="text-muted" style="font-size:0.75rem;margin-bottom:0.5rem">
+                📍 ${evento.lugar || 'Por definir'} · ⏰ ${evento.hora || '—'}
+              </div>
+              <p style="font-size:0.85rem;color:var(--text-muted)">${(evento.descripcion || '').substring(0, 100)}${evento.descripcion?.length > 100 ? '...' : ''}</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Inicializar filtros por tipo
+  document.querySelectorAll('#event-tabs .tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('#event-tabs .tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentTipo = tab.dataset.tipo;
+      filtrarYMostrar();
+    });
+  });
+
+  // Búsqueda
+  searchInput.addEventListener('input', (e) => {
+    currentSearch = e.target.value.toLowerCase();
+    filtrarYMostrar();
+  });
+
+  // Próximo evento banner
+  (async () => {
+    const banner = document.getElementById('next-event-banner');
+    try {
+      const q = query(collection(db, 'eventos'), where('fecha', '>=', Timestamp.now()), orderBy('fecha', 'asc'), limit(1));
+      const snap = await getDocs(q);
+      if (snap.empty) return;
+      const d = snap.docs[0].data();
+      const dl = daysLeft(d.fecha);
+      banner.innerHTML = `
+        <div style="background:linear-gradient(135deg,var(--blue-800),var(--blue-900));border-radius:var(--radius-xl);padding:28px 32px;display:flex;align-items:center;gap:24px;color:var(--white);flex-wrap:wrap">
+          <div style="font-size:3rem">📌</div>
+          <div style="flex:1">
+            <div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-300);margin-bottom:6px">Próximo evento</div>
+            <div style="font-size:1.3rem;font-weight:700;font-family:var(--font-display)">${d.titulo}</div>
+            <div style="color:rgba(255,255,255,.7);margin-top:4px;font-size:.9rem">📍 ${d.lugar || '—'} · 🕐 ${d.hora || '—'}</div>
+          </div>
+          <div style="text-align:center;background:rgba(244,161,0,.2);border:1px solid rgba(244,161,0,.3);border-radius:var(--radius-lg);padding:16px 24px">
+            <div style="font-family:var(--font-display);font-size:2.5rem;font-weight:900;color:var(--gold-400);line-height:1">${dl === 0 ? '¡HOY!' : dl}</div>
+            ${dl !== 0 ? '<div style="font-size:.75rem;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.08em">días</div>' : ''}
+          </div>
+        </div>`;
+    } catch(_) {}
+  })();
+
+  // Cargar eventos al inicio
+  cargarEventos();
+</script>
+</body>
+</html>

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consejo Estudiantil — Instituto Pedagógico</title>
+  <meta name="description" content="Consejo de Estudiantes del Instituto Pedagógico. Tu voz, nuestro compromiso.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<!-- ── TOAST CONTAINER ── -->
+<div id="toast-container"></div>
+
+<!--HEADER-->
+<div id="header-placeholder"></div>
+
+
+<!-- ── HERO ── -->
+<main class="page-wrapper">
+  <section class="hero">
+    <canvas id="hero-canvas" style="position:absolute;inset:0;z-index:0;pointer-events:none"></canvas>
+    <div class="hero-pattern"></div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="dot"></span>
+          Representación estudiantil activa
+        </div>
+        <h1>Tu voz,<br><span>nuestro compromiso</span></h1>
+        <p class="hero-desc">
+          El Consejo Estudiantil del Instituto Pedagógico trabaja todos los días
+          para mejorar tu experiencia académica y fortalecer nuestra comunidad.
+        </p>
+        <div class="hero-actions">
+          <a href="propuestas.html" class="btn btn-primary btn-lg">💡 Enviar propuesta</a>
+          <a href="votaciones.html" class="btn btn-secondary btn-lg">🗳 Participar</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="hero-stat-n" id="hs-noticias">—</div>
+            <div class="hero-stat-l">Noticias publicadas</div>
+          </div>
+          <div>
+            <div class="hero-stat-n" id="hs-eventos">—</div>
+            <div class="hero-stat-l">Eventos realizados</div>
+          </div>
+          <div>
+            <div class="hero-stat-n" id="hs-propuestas">—</div>
+            <div class="hero-stat-l">Propuestas atendidas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <div class="hero-scroll-line"></div>
+      Explorar
+    </div>
+  </section>
+
+  <!-- ── FEATURES ── -->
+  <section class="section" style="position:relative">
+    <div class="container">
+      <div class="text-center mb-4">
+        <div class="section-eyebrow">¿Qué ofrecemos?</div>
+        <h2>Todo lo que necesitas<br>en un solo lugar</h2>
+      </div>
+      <div class="grid-3">
+        <div class="feature-item reveal delay-1">
+          <div class="feature-icon blue">📰</div>
+          <div class="feature-title">Noticias</div>
+          <p class="feature-desc">Mantente informado con las últimas novedades académicas, culturales e institucionales.</p>
+          <a href="noticias.html" class="feature-link">Ver noticias →</a>
+        </div>
+        <div class="feature-item reveal delay-2">
+          <div class="feature-icon gold">📅</div>
+          <div class="feature-title">Eventos</div>
+          <p class="feature-desc">Conoce los próximos eventos, talleres, actividades deportivas y fechas importantes.</p>
+          <a href="eventos.html" class="feature-link">Ver eventos →</a>
+        </div>
+        <div class="feature-item reveal delay-3">
+          <div class="feature-icon green">💡</div>
+          <div class="feature-title">Propuestas</div>
+          <p class="feature-desc">¿Tienes una idea para mejorar el instituto? Envíala y el Consejo la evaluará.</p>
+          <a href="propuestas.html" class="feature-link">Proponer →</a>
+        </div>
+        <div class="feature-item reveal delay-4">
+          <div class="feature-icon purple">🗳️</div>
+          <div class="feature-title">Votaciones</div>
+          <p class="feature-desc">Participa en decisiones importantes que afectan a toda la comunidad estudiantil.</p>
+          <a href="votaciones.html" class="feature-link">Votar →</a>
+        </div>
+        <div class="feature-item reveal delay-5">
+          <div class="feature-icon orange">💬</div>
+          <div class="feature-title">Opiniones</div>
+          <p class="feature-desc">Comparte tus comentarios, sugerencias o quejas directamente con el Consejo.</p>
+          <a href="contacto.html" class="feature-link">Opinar →</a>
+        </div>
+        <div class="feature-item reveal delay-6">
+          <div class="feature-icon red">🏆</div>
+          <div class="feature-title">Representación</div>
+          <p class="feature-desc">Conoce a los miembros del Consejo y cómo trabajan por tus derechos estudiantiles.</p>
+          <a href="contacto.html" class="feature-link">Conocer →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ÚLTIMAS NOTICIAS ── -->
+  <section class="section" style="background:rgba(0,200,240,.025);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+    <div class="container">
+      <div class="section-header reveal">
+        <div>
+          <div class="section-eyebrow">Actualidad</div>
+          <h2 class="section-title">Últimas Noticias</h2>
+        </div>
+        <a href="noticias.html" class="btn btn-outline">Ver todas →</a>
+      </div>
+      <div class="grid-3" id="noticias-home"></div>
+    </div>
+  </section>
+
+  <!-- ── PRÓXIMOS EVENTOS ── -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <div>
+          <div class="section-eyebrow">Agenda</div>
+          <h2 class="section-title">Próximos Eventos</h2>
+        </div>
+        <a href="eventos.html" class="btn btn-outline">Ver todos →</a>
+      </div>
+      <div class="grid-2" id="eventos-home"></div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
+  <section class="section" style="position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(0,200,240,.08) 0%,rgba(139,92,246,.08) 100%);border-top:1px solid var(--border)">
+    <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(0,200,240,.04) 1px,transparent 1px);background-size:28px 28px;pointer-events:none"></div>
+    <div class="container text-center" style="position:relative;z-index:1">
+      <div class="reveal">
+        <div style="font-size:3rem;margin-bottom:16px;display:inline-block" class="anim-float">🎓</div>
+        <h2 style="color:var(--white);margin-bottom:1rem">¿Tienes algo que decir?</h2>
+        <p style="color:var(--text-muted);max-width:520px;margin:0 auto 2rem">
+          El Consejo Estudiantil está para escucharte. Envía tu propuesta, participa en las votaciones o escríbenos directamente.
+        </p>
+        <div class="flex gap-2 justify-center flex-wrap">
+          <a href="propuestas.html" class="btn btn-primary btn-lg">💡 Enviar propuesta</a>
+          <a href="contacto.html"   class="btn btn-secondary btn-lg">💬 Contactar</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-name">🎓 Consejo Estudiantil</div>
+        <div class="footer-brand-sub">Instituto Pedagógico</div>
+        <p class="footer-desc">Representando y defendiendo los intereses de todos los estudiantes del Instituto Pedagógico.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Páginas</div>
+        <div class="footer-links">
+          <a href="noticias.html">Noticias</a>
+          <a href="eventos.html">Eventos</a>
+          <a href="propuestas.html">Propuestas</a>
+          <a href="votaciones.html">Votaciones</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Estudiantes</div>
+        <div class="footer-links">
+          <a href="contacto.html">Contacto</a>
+          <a href="propuestas.html">Mis propuestas</a>
+          <a href="votaciones.html">Participar</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Institución</div>
+        <div class="footer-links">
+          <a href="#">Reglamento</a>
+          <a href="#">Calendario académico</a>
+          <a href="admin.html">Panel Admin</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 Consejo Estudiantil — Instituto Pedagógico</span>
+      <span>Hecho con <span class="footer-bottom-heart">♥</span> por y para los estudiantes</span>
+    </div>
+  </div>
+</footer>
+
+<!-- SCRIPT PRINCIPAL -->
+<script type="module">
+  import { db, auth } from './js/firebase-config.js';
+  import { 
+    collection, getDocs, query, orderBy, limit 
+  } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+  import { 
+    signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged 
+  } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  
+  // ============================================
+  // SISTEMA DE LOGIN/LOGOUT
+  // ============================================
+import { onAuthChange } from './js/auth.js';
+
+
+  // Cargar header dinámicamente
+  const headerPlaceholder = document.getElementById('header-placeholder');
+  if (headerPlaceholder) {
+    const response = await fetch('components/header.html');
+    const headerHTML = await response.text();
+    headerPlaceholder.innerHTML = headerHTML;
+    
+    // Inicializar auth después de cargar el header
+    onAuthChange();
+    
+    // Configurar menú hamburguesa
+    const toggle = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    if (toggle && navLinks) {
+      toggle.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+        toggle.classList.toggle('open');
+      });
+    }
+  }
+
+  // Función para mostrar toasts
+  function mostrarToast(titulo, mensaje, tipo = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${tipo}`;
+    toast.style.cssText = `
+      background: ${tipo === 'success' ? '#10b981' : tipo === 'error' ? '#ef4444' : '#00c8f0'};
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      animation: slideIn 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      font-size: 0.875rem;
+    `;
+    toast.innerHTML = `<strong>${titulo}</strong><br>${mensaje}`;
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.style.animation = 'slideOut 0.3s ease';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+  
+  
+  
+  // ============================================
+  // FUNCIÓN PARA CARGAR NOTICIAS
+  // ============================================
+  async function cargarNoticias() {
+    const container = document.getElementById('noticias-home');
+    if (!container) return;
+    
+    container.innerHTML = '<div style="text-align:center;padding:2rem">📰 Cargando noticias...</div>';
+    
+    try {
+      const q = query(collection(db, 'noticias'), orderBy('fechaCreacion', 'desc'), limit(3));
+      const snap = await getDocs(q);
+      
+      if (snap.empty) {
+        container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted)">📰 No hay noticias aún</div>';
+        return;
+      }
+      
+      container.innerHTML = '';
+      snap.forEach(doc => {
+        const data = doc.data();
+        const div = document.createElement('div');
+        div.style.cssText = 'background:rgba(10,22,40,0.6);border:1px solid var(--border);border-radius:20px;padding:1.5rem';
+        div.innerHTML = `
+          <h3 style="margin-bottom:0.5rem">${data.titulo || 'Sin título'}</h3>
+          <p style="color:var(--text-muted);font-size:0.8rem">${data.autor || 'Consejo'} · ${data.fechaCreacion?.toDate().toLocaleDateString('es-PE') || 'Fecha no disponible'}</p>
+          <p style="color:var(--text-base)">${(data.contenido || '').substring(0, 100)}${(data.contenido || '').length > 100 ? '...' : ''}</p>
+          <a href="noticia-detalle.html?id=${doc.id}" style="color:var(--cyan-400);text-decoration:none">Leer más →</a>
+        `;
+        container.appendChild(div);
+      });
+    } catch (error) {
+      console.error('Error cargando noticias:', error);
+      container.innerHTML = '<div style="text-align:center;padding:2rem;color:red">Error al cargar noticias</div>';
+    }
+  }
+  
+  // ============================================
+  // FUNCIÓN PARA CARGAR EVENTOS
+  // ============================================
+  async function cargarEventos() {
+    const container = document.getElementById('eventos-home');
+    if (!container) return;
+    
+    container.innerHTML = '<div style="text-align:center;padding:2rem">📅 Cargando eventos...</div>';
+    
+    try {
+      const q = query(collection(db, 'eventos'), orderBy('fecha', 'desc'), limit(4));
+      const snap = await getDocs(q);
+      
+      if (snap.empty) {
+        container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted)">📅 No hay eventos aún</div>';
+        return;
+      }
+      
+      container.innerHTML = '';
+      snap.forEach(doc => {
+        const data = doc.data();
+        let fechaHtml = '';
+        
+        if (data.fecha) {
+          const fechaObj = data.fecha.toDate ? data.fecha.toDate() : new Date(data.fecha);
+          const dia = fechaObj.getDate();
+          const mes = fechaObj.toLocaleDateString('es-PE', { month: 'short' }).toUpperCase();
+          fechaHtml = `
+            <div style="background:linear-gradient(135deg,var(--cyan-600),var(--violet-600));border-radius:16px;padding:0.75rem;text-align:center;min-width:80px">
+              <div style="font-size:1.8rem;font-weight:800;color:white">${dia}</div>
+              <div style="font-size:0.7rem;color:rgba(255,255,255,0.8)">${mes}</div>
+            </div>
+          `;
+        }
+        
+        const div = document.createElement('div');
+        div.style.cssText = 'background:rgba(10,22,40,0.6);border:1px solid var(--border);border-radius:20px;overflow:hidden';
+        div.innerHTML = `
+          <div style="display:flex;gap:1rem;flex-wrap:wrap">
+            ${fechaHtml}
+            <div style="padding:1rem;flex:1">
+              <h3 style="margin-bottom:0.25rem;font-size:1rem">${data.titulo || 'Sin título'}</h3>
+              <div style="font-size:0.7rem;color:var(--text-muted)">📍 ${data.lugar || 'Por definir'} · ⏰ ${data.hora || '—'}</div>
+              <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.5rem">${(data.descripcion || '').substring(0, 80)}${(data.descripcion || '').length > 80 ? '...' : ''}</p>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    } catch (error) {
+      console.error('Error cargando eventos:', error);
+      container.innerHTML = '<div style="text-align:center;padding:2rem;color:red">Error al cargar eventos</div>';
+    }
+  }
+  
+  // ============================================
+  // FUNCIÓN PARA CARGAR CONTADORES
+  // ============================================
+  async function cargarContadores() {
+    const colecciones = ['noticias', 'eventos', 'propuestas'];
+    const ids = ['hs-noticias', 'hs-eventos', 'hs-propuestas'];
+    
+    for (let i = 0; i < colecciones.length; i++) {
+      try {
+        const snap = await getDocs(collection(db, colecciones[i]));
+        const el = document.getElementById(ids[i]);
+        if (el) el.textContent = snap.size;
+      } catch(e) {
+        console.error(`Error cargando ${colecciones[i]}:`, e);
+      }
+    }
+  }
+  
+  // ============================================
+  // CANVAS DE PARTÍCULAS (FUNCIONALIDAD VISUAL)
+  // ============================================
+  function initParticles() {
+    const canvas = document.getElementById('hero-canvas');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    let W, H, pts = [];
+    
+    function resize() {
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    
+    const N = 60;
+    for (let i = 0; i < N; i++) {
+      pts.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        r: Math.random() * 1.6 + 0.4,
+        a: Math.random()
+      });
+    }
+    
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      pts.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > W) p.vx *= -1;
+        if (p.y < 0 || p.y > H) p.vy *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,200,240,${p.a * 0.55})`;
+        ctx.fill();
+      });
+      
+      for (let i = 0; i < pts.length; i++) {
+        for (let j = i + 1; j < pts.length; j++) {
+          const dx = pts[i].x - pts[j].x;
+          const dy = pts[i].y - pts[j].y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 120) {
+            ctx.beginPath();
+            ctx.moveTo(pts[i].x, pts[i].y);
+            ctx.lineTo(pts[j].x, pts[j].y);
+            const alpha = (1 - d / 120) * 0.12;
+            ctx.strokeStyle = `rgba(0,200,240,${alpha})`;
+            ctx.lineWidth = 0.7;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }
+  
+  // ============================================
+  // ESTILOS PARA TOASTS
+  // ============================================
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+    #toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    .btn-danger {
+      background: rgba(239,68,68,0.2);
+      border: 1px solid #ef4444;
+      color: #ef4444;
+      transition: all 0.2s;
+    }
+    .btn-danger:hover {
+      background: #ef4444;
+      color: white;
+    }
+  `;
+  document.head.appendChild(style);
+  
+  // ============================================
+  // EJECUTAR TODO
+  // ============================================
+  cargarNoticias();
+  cargarEventos();
+  cargarContadores();
+  initParticles();
+  
+  // Navbar toggle
+  const toggle = document.querySelector('.nav-toggle');
+  const navLinks = document.querySelector('.nav-links');
+  if (toggle && navLinks) {
+    toggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+      toggle.classList.toggle('open');
+    });
+  }
+  
+  // Scroll reveal
+  const revealElements = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  revealElements.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

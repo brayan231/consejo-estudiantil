@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirigiendo...</title>
+  <script>
+    // Detecta el nombre del repositorio automáticamente
+    const repoName = window.location.pathname.split('/')[1];
+    const pathWithoutRepo = window.location.pathname.substring(repoName.length + 1);
+    const newPath = `/${repoName}${pathWithoutRepo}`;
+    
+    // Si no hay path, ir al index
+    if (!pathWithoutRepo || pathWithoutRepo === '/') {
+      window.location.href = `/${repoName}/index.html`;
+    } else {
+      window.location.href = newPath;
+    }
+  </script>
+</head>
+<body>
+  <p>Redirigiendo...</p>
+</body>
+</html>

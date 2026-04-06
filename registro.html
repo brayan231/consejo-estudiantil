@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro — Consejo Estudiantil</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --secondary: #00c8f0;
+      --dark: #0a0f1a;
+      --darker: #050a14;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+    }
+
+    .register-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at 30% 40%, #0a0f1a, #03060c);
+      position: relative;
+    }
+    
+    .register-page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0, 200, 240, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 200, 240, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+    
+    .register-card {
+      background: rgba(10, 22, 40, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 200, 240, 0.2);
+      border-radius: 24px;
+      padding: 2.5rem;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 200, 240, 0.1);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .register-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #00c8f0, #8b5cf6, #4f46e5);
+      border-radius: 24px 24px 0 0;
+    }
+    
+    .register-logo {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .register-logo-icon {
+      font-size: 3rem;
+      background: linear-gradient(135deg, #00c8f0, #8b5cf6);
+      width: 70px;
+      height: 70px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      box-shadow: 0 0 30px rgba(0, 200, 240, 0.3);
+    }
+    
+    .register-title {
+      text-align: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #fff, #00c8f0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    .register-sub {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 2rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    
+    .password-wrapper {
+      position: relative;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 200, 240, 0.2);
+      border-radius: 12px;
+      color: #fff;
+      transition: all 0.2s;
+      box-sizing: border-box;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: #00c8f0;
+      box-shadow: 0 0 0 3px rgba(0, 200, 240, 0.1);
+    }
+    
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+      font-size: 1.1rem;
+    }
+    
+    .toggle-password:hover {
+      opacity: 1;
+    }
+    
+    .form-error {
+      color: #ef4444;
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+    
+    .form-error.show {
+      display: block;
+    }
+    
+    .input-error {
+      border-color: #ef4444 !important;
+      background-color: rgba(239, 68, 68, 0.1) !important;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      font-family: inherit;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #00c8f0, #8b5cf6);
+      color: #fff;
+      font-weight: 600;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(0, 200, 240, 0.4);
+    }
+    
+    .btn-google {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .btn-google:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+    
+    .btn-google img {
+      width: 20px;
+      height: 20px;
+    }
+    
+    .btn-loading {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #4f46e5;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 1.5rem 0;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+    
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .divider span {
+      margin: 0 10px;
+    }
+    
+    .info-message {
+      background: rgba(0, 200, 240, 0.1);
+      border-left: 3px solid #00c8f0;
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.75rem;
+      color: #00c8f0;
+    }
+    
+    .text-center {
+      text-align: center;
+    }
+    
+    .mt-3 {
+      margin-top: 1rem;
+    }
+    
+    .text-muted {
+      color: var(--text-muted);
+    }
+    
+    a {
+      color: #00c8f0;
+      text-decoration: none;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div id="toast-container"></div>
+
+<div class="register-page">
+  <div class="register-card">
+    <div class="register-logo">
+      <div class="register-logo-icon">🎓</div>
+    </div>
+    <h1 class="register-title">Crear cuenta</h1>
+    <p class="register-sub">Únete al Consejo Estudiantil</p>
+
+    <div class="info-message">
+      💡 Regístrate para participar en votaciones y enviar propuestas
+    </div>
+    
+    <form id="register-form">
+      <div class="form-group">
+        <label class="form-label">Nombre completo</label>
+        <input class="form-control" type="text" id="nombre" name="nombre" placeholder="Ej: Juan Pérez García" autocomplete="name">
+        <div class="form-error" id="nombre-error"></div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Correo electrónico</label>
+        <input class="form-control" type="email" id="email" name="email" placeholder="correo@instituto.edu" autocomplete="email">
+        <div class="form-error" id="email-error"></div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <div class="password-wrapper">
+          <input class="form-control" type="password" id="password" name="password" placeholder="••••••••" autocomplete="new-password">
+          <span class="toggle-password" onclick="togglePassword()">👁️</span>
+        </div>
+        <div class="form-error" id="password-error"></div>
+      </div>
+      
+      <button class="btn btn-primary" type="submit" id="register-btn">
+        Registrarse
+      </button>
+    </form>
+    
+    <div class="divider">
+      <span>O regístrate con</span>
+    </div>
+    
+    <button class="btn btn-google" id="google-btn">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+      Continuar con Google
+    </button>
+    
+    <div class="text-center mt-3">
+      <p class="text-muted">¿Ya tienes cuenta? <a href="login.html">Inicia sesión aquí</a></p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { registerStudent, loginWithGoogle } from './js/auth.js';
+  
+  // Elementos del DOM
+  const registerForm = document.getElementById('register-form');
+  const nombreInput = document.getElementById('nombre');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const registerBtn = document.getElementById('register-btn');
+  const googleBtn = document.getElementById('google-btn');
+  const nombreError = document.getElementById('nombre-error');
+  const emailError = document.getElementById('email-error');
+  const passwordError = document.getElementById('password-error');
+  
+  let isSubmitting = false;
+  
+  function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+  
+  function validateNombre(nombre) {
+    return nombre.trim().length >= 3;
+  }
+  
+  function showError(input, errorElement, message) {
+    errorElement.textContent = message;
+    errorElement.classList.add('show');
+    input.classList.add('input-error');
+  }
+  
+  function clearErrors() {
+    nombreError.classList.remove('show');
+    emailError.classList.remove('show');
+    passwordError.classList.remove('show');
+    nombreInput.classList.remove('input-error');
+    emailInput.classList.remove('input-error');
+    passwordInput.classList.remove('input-error');
+  }
+  
+  function setLoading(btn, loading, originalText) {
+    isSubmitting = loading;
+    if (loading) {
+      btn.disabled = true;
+      btn.classList.add('btn-loading');
+      btn.innerHTML = '<span class="loading-spinner"></span>Registrando...';
+    } else {
+      btn.disabled = false;
+      btn.classList.remove('btn-loading');
+      btn.innerHTML = originalText;
+    }
+  }
+  
+  // Validaciones en tiempo real
+  nombreInput.addEventListener('input', () => {
+    if (nombreInput.value && !validateNombre(nombreInput.value)) {
+      showError(nombreInput, nombreError, '⚠️ El nombre debe tener al menos 3 caracteres');
+    } else {
+      nombreError.classList.remove('show');
+      nombreInput.classList.remove('input-error');
+    }
+  });
+  
+  emailInput.addEventListener('input', () => {
+    if (emailInput.value && !validateEmail(emailInput.value)) {
+      showError(emailInput, emailError, '⚠️ Ingresa un correo electrónico válido');
+    } else {
+      emailError.classList.remove('show');
+      emailInput.classList.remove('input-error');
+    }
+  });
+  
+  passwordInput.addEventListener('input', () => {
+    if (passwordInput.value && passwordInput.value.length < 6) {
+      showError(passwordInput, passwordError, '⚠️ La contraseña debe tener al menos 6 caracteres');
+    } else {
+      passwordError.classList.remove('show');
+      passwordInput.classList.remove('input-error');
+    }
+  });
+  
+  // Registro con email/contraseña
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+    
+    clearErrors();
+    
+    const nombre = nombreInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    
+    let hasError = false;
+    
+    if (!nombre) {
+      showError(nombreInput, nombreError, '⚠️ El nombre es requerido');
+      hasError = true;
+    } else if (!validateNombre(nombre)) {
+      showError(nombreInput, nombreError, '⚠️ El nombre debe tener al menos 3 caracteres');
+      hasError = true;
+    }
+    
+    if (!email) {
+      showError(emailInput, emailError, '⚠️ El correo electrónico es requerido');
+      hasError = true;
+    } else if (!validateEmail(email)) {
+      showError(emailInput, emailError, '⚠️ Ingresa un correo electrónico válido');
+      hasError = true;
+    }
+    
+    if (!password) {
+      showError(passwordInput, passwordError, '⚠️ La contraseña es requerida');
+      hasError = true;
+    } else if (password.length < 6) {
+      showError(passwordInput, passwordError, '⚠️ La contraseña debe tener al menos 6 caracteres');
+      hasError = true;
+    }
+    
+    if (hasError) return;
+    
+    setLoading(registerBtn, true, 'Registrarse');
+    
+    const user = await registerStudent(email, password, nombre, 'Estudiante');
+    
+    if (user) {
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 2000);
+    }
+    
+    setLoading(registerBtn, false, 'Registrarse');
+  });
+  
+  // Registro con Google
+  if (googleBtn) {
+    googleBtn.addEventListener('click', async () => {
+      if (isSubmitting) return;
+      setLoading(googleBtn, true, 'Continuar con Google');
+      
+      const user = await loginWithGoogle();
+      
+      if (user) {
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 2000);
+      }
+      
+      setLoading(googleBtn, false, 'Continuar con Google');
+    });
+  }
+</script>
+
+<script>
+  function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const toggleIcon = event.target;
+    
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleIcon.textContent = '🙈';
+    } else {
+      passwordInput.type = 'password';
+      toggleIcon.textContent = '👁️';
+    }
+  }
+</script>
+</body>
+</html>

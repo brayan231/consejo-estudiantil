@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Noticias — Consejo Estudiantil</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    /* Estilos adicionales para noticias */
+    .news-card {
+      background: var(--card-bg, #1e293b);
+      border-radius: 1rem;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .news-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    }
+    
+    .news-card-img-placeholder {
+      background: linear-gradient(135deg, #00c8f0, #8b5cf6);
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+    }
+    
+    .news-card-body {
+      padding: 1.25rem;
+    }
+    
+    .news-card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0.75rem 0;
+      color: #fff;
+      line-height: 1.4;
+    }
+    
+    .news-card-excerpt {
+      color: #94a3b8;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+    
+    .news-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .badge-blue { background: rgba(0, 200, 240, 0.2); color: #00c8f0; }
+    .badge-purple { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+    .badge-green { background: rgba(52, 211, 153, 0.2); color: #34d399; }
+    .badge-gold { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+    .badge-gray { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+    
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #00c8f0;
+      color: #00c8f0;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-outline:hover {
+      background: rgba(0, 200, 240, 0.1);
+      transform: scale(1.02);
+    }
+    
+    .btn-sm {
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+    }
+    
+    /* Galería de imágenes */
+    .news-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+    
+    .news-gallery img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .news-gallery img:hover {
+      transform: scale(1.02);
+    }
+    
+    /* Modal para imágenes */
+    .image-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.95);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    
+    .image-modal img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+    
+    /* Modal para noticias */
+    .news-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.95);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+    
+    .news-modal-content {
+      background: #1e293b;
+      border-radius: 24px;
+      max-width: 700px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      border: 1px solid rgba(0,200,240,0.3);
+    }
+    
+    .news-modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: #1e293b;
+      border-radius: 24px 24px 0 0;
+    }
+    
+    .news-modal-body {
+      padding: 1.5rem;
+      line-height: 1.6;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+    }
+    
+    .close-modal {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.8rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .close-modal:hover {
+      transform: scale(1.1);
+      color: #00c8f0;
+    }
+    
+    .flex { display: flex; }
+    .gap-1 { gap: 0.5rem; }
+    .gap-2 { gap: 1rem; }
+    .flex-wrap { flex-wrap: wrap; }
+    .justify-between { justify-content: space-between; }
+    .items-center { align-items: center; }
+    .text-muted { color: #64748b; font-size: 0.875rem; }
+    
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .reveal {
+      animation: fadeInUp 0.5s ease both;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .search-bar {
+      background: rgba(255,255,255,0.05);
+      border-radius: 9999px;
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .search-bar-icon {
+      color: #64748b;
+    }
+    
+    .search-bar input {
+      background: none;
+      border: none;
+      color: #fff;
+      width: 100%;
+      outline: none;
+    }
+    
+    .search-bar input::placeholder {
+      color: #64748b;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    
+    .tab-btn {
+      background: rgba(255,255,255,0.05);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .tab-btn.active {
+      background: #00c8f0;
+      color: #fff;
+    }
+    
+    .tab-btn:hover:not(.active) {
+      background: rgba(0,200,240,0.2);
+      color: #00c8f0;
+    }
+  </style>
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<header class="site-header">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">🎓</div>
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">Consejo Estudiantil</span>
+        <span class="nav-logo-sub">Instituto Pedagógico</span>
+      </div>
+    </a>
+    <nav class="nav-links" id="nav-links">
+      <a href="index.html"      class="nav-link">Inicio</a>
+      <a href="noticias.html"   class="nav-link active">Noticias</a>
+      <a href="eventos.html"    class="nav-link">Eventos</a>
+      <a href="propuestas.html" class="nav-link">Propuestas</a>
+      <a href="votaciones.html" class="nav-link">Votaciones</a>
+      <a href="contacto.html"   class="nav-link">Contacto</a>
+      <a href="admin.html"      class="nav-admin-btn">⚙ Admin</a>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main class="page-wrapper">
+  <div class="page-hero">
+    <div class="container page-hero-content">
+      <div class="page-hero-icon">📰</div>
+      <h1>Noticias</h1>
+      <p>Mantente informado con las últimas novedades del Instituto Pedagógico</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="flex gap-2 mb-4 flex-wrap items-center justify-between reveal">
+        <div class="search-bar" style="flex:1;max-width:360px">
+          <span class="search-bar-icon">🔍</span>
+          <input type="text" id="search-noticias" placeholder="Buscar noticias...">
+        </div>
+      </div>
+
+      <div class="tabs" id="cat-tabs"></div>
+
+      <div class="grid-3" id="noticias-list"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2024 Consejo Estudiantil — Instituto Pedagógico</span>
+      <span>Hecho con <span class="footer-bottom-heart">♥</span> por y para los estudiantes</span>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  import { db } from './js/firebase-config.js';
+  import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+  import { formatDate, relativeTime, truncate, sanitize } from './js/main.js';
+
+  const container = document.getElementById('noticias-list');
+  const searchInput = document.getElementById('search-noticias');
+  let allNoticias = [];
+  let currentFilter = 'todas';
+
+  function getCategoryEmoji(cat) {
+    const m = {
+      'Académico':'📚', 'Cultural':'🎭', 'Deportivo':'⚽',
+      'Institucional':'🏛️', 'General':'📰'
+    };
+    return m[cat] || '📰';
+  }
+
+  // Modal para ver imagen ampliada
+  window.verImagen = (url) => {
+    const modal = document.createElement('div');
+    modal.className = 'image-modal';
+    modal.innerHTML = `<img src="${sanitize(url)}" alt="Imagen ampliada">`;
+    modal.onclick = () => modal.remove();
+    document.body.appendChild(modal);
+  };
+
+  // Modal para ver noticia completa
+  window.verNoticiaCompleta = (titulo, contenido, imagenesUrls) => {
+    const modal = document.createElement('div');
+    modal.className = 'news-modal';
+    
+    let imagenesHtml = '';
+    if (imagenesUrls && imagenesUrls.length > 0) {
+      imagenesHtml = `<div class="news-gallery" style="margin-bottom:1rem">`;
+      imagenesUrls.forEach(url => {
+        imagenesHtml += `<img src="${sanitize(url)}" style="cursor:pointer;height:120px" onclick="verImagen('${sanitize(url)}')">`;
+      });
+      imagenesHtml += `</div>`;
+    }
+    
+    modal.innerHTML = `
+      <div class="news-modal-content">
+        <div class="news-modal-header">
+          <h3 style="color:#fff;margin:0">📰 ${sanitize(titulo)}</h3>
+          <button class="close-modal" onclick="this.closest('.news-modal').remove()">&times;</button>
+        </div>
+        <div class="news-modal-body">
+          ${imagenesHtml}
+          <div style="white-space:pre-wrap">${sanitize(contenido)}</div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  };
+
+  // Función para convertir URL de Google Drive a descarga directa
+  function convertirGoogleDriveUrl(url) {
+    if (!url) return null;
+    
+    let fileId = '';
+    if (url.includes('/file/d/')) {
+      fileId = url.split('/file/d/')[1].split('/')[0];
+    } else if (url.includes('id=')) {
+      fileId = url.split('id=')[1].split('&')[0];
+    } else if (url.includes('uc?id=')) {
+      fileId = url.split('uc?id=')[1].split('&')[0];
+    } else if (url.includes('open?id=')) {
+      fileId = url.split('open?id=')[1].split('&')[0];
+    }
+    
+    if (fileId) {
+      return `https://drive.google.com/uc?export=download&id=${fileId}`;
+    }
+    return url;
+  }
+
+  // Función para descargar PDF
+  window.descargarPDF = async (url, titulo) => {
+    if (!url) {
+      alert('No hay PDF disponible');
+      return;
+    }
+    
+    // Convertir URL de Google Drive si es necesario
+    const downloadUrl = convertirGoogleDriveUrl(url);
+    
+    try {
+      // Intentar descarga forzada
+      const response = await fetch(downloadUrl);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = `${titulo || 'documento'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error('Error al descargar PDF:', err);
+      // Fallback: abrir en nueva pestaña
+      window.open(downloadUrl, '_blank');
+    }
+  };
+
+  function buildNewsCard(id, data) {
+    if (!data || !data.titulo) return '';
+    
+    const catColors = {
+      'Académico': 'blue', 'Cultural': 'purple', 
+      'Deportivo': 'green', 'Institucional': 'gold', 'General': 'gray'
+    };
+    const catColor = catColors[data.categoria] || 'gray';
+    
+    // Galería de imágenes
+    let imagenesHtml = '';
+    if (data.imagenesUrls && data.imagenesUrls.length > 0) {
+      imagenesHtml = `<div class="news-gallery">`;
+      data.imagenesUrls.slice(0, 3).forEach(url => {
+        imagenesHtml += `<img src="${sanitize(url)}" loading="lazy" onclick="verImagen('${sanitize(url)}')">`;
+      });
+      if (data.imagenesUrls.length > 3) {
+        imagenesHtml += `<div style="background:rgba(0,0,0,0.5);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#fff">+${data.imagenesUrls.length - 3}</div>`;
+      }
+      imagenesHtml += `</div>`;
+    } else if (data.imagenUrlStorage || data.imagenUrl) {
+      const imgUrl = data.imagenUrlStorage || data.imagenUrl;
+      imagenesHtml = `<img src="${sanitize(imgUrl)}" style="width:100%;height:200px;object-fit:cover;border-radius:8px;margin-bottom:1rem;cursor:pointer" onclick="verImagen('${sanitize(imgUrl)}')">`;
+    } else {
+      imagenesHtml = `<div class="news-card-img-placeholder">${getCategoryEmoji(data.categoria)}</div>`;
+    }
+    
+    // Botón PDF
+    let pdfHtml = '';
+    if (data.pdfUrl) {
+      pdfHtml = `<button onclick="descargarPDF('${sanitize(data.pdfUrl)}', '${sanitize(data.titulo)}')" class="btn-outline btn-sm">📄 Descargar PDF</button>`;
+    }
+    
+    // Enlace externo
+    let enlaceHtml = '';
+    if (data.enlaceExterno) {
+      enlaceHtml = `<a href="${sanitize(data.enlaceExterno)}" target="_blank" class="btn-outline btn-sm" rel="noopener noreferrer">🔗 Enlace externo</a>`;
+    }
+    
+    const fechaMostrar = data.fechaPersonalizada || relativeTime(data.fechaCreacion);
+    const contenidoCorto = truncate(data.contenido || '', 150);
+    
+    return `
+      <article class="news-card reveal">
+        ${imagenesHtml}
+        <div class="news-card-body">
+          <div class="flex gap-1 flex-wrap">
+            <span class="badge badge-${catColor}">${sanitize(data.categoria || 'General')}</span>
+            ${data.destacado ? '<span class="badge badge-gold">⭐ Destacado</span>' : ''}
+          </div>
+          
+          <h3 class="news-card-title">${sanitize(data.titulo)}</h3>
+          
+          <div class="text-muted" style="margin-bottom:0.75rem">
+            ✍️ ${sanitize(data.autor || 'Consejo Estudiantil')} · 📅 ${fechaMostrar}
+          </div>
+          
+          ${data.resumen ? `<div style="background:rgba(0,200,240,0.1);padding:0.75rem;border-radius:8px;margin-bottom:1rem">📝 ${sanitize(data.resumen)}</div>` : ''}
+          
+          <div style="line-height:1.6;color:#cbd5e1;margin-bottom:1rem">
+            ${sanitize(contenidoCorto)}
+            ${(data.contenido?.length || 0) > 150 ? `<button onclick="verNoticiaCompleta('${sanitize(data.titulo)}', '${sanitize(data.contenido)}', ${JSON.stringify(data.imagenesUrls || [])})" class="btn-outline btn-sm" style="margin-top:0.5rem">📖 Leer más</button>` : ''}
+          </div>
+          
+          <div class="flex gap-1 flex-wrap">
+            ${pdfHtml}
+            ${enlaceHtml}
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  // Crear pestañas de categorías
+  function buildTabs(noticias) {
+    const categories = new Set();
+    categories.add('todas');
+    noticias.forEach(n => {
+      if (n.categoria) categories.add(n.categoria);
+    });
+    
+    const tabsContainer = document.getElementById('cat-tabs');
+    if (!tabsContainer) return;
+    
+    let html = '';
+    categories.forEach(cat => {
+      const displayName = cat === 'todas' ? '📋 Todas' : cat;
+      html += `<button class="tab-btn ${currentFilter === cat ? 'active' : ''}" data-cat="${cat}">${displayName}</button>`;
+    });
+    tabsContainer.innerHTML = html;
+    
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentFilter = btn.dataset.cat;
+        filterNoticias();
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  }
+  
+  function filterNoticias() {
+    let filtered = [...allNoticias];
+    
+    if (currentFilter !== 'todas') {
+      filtered = filtered.filter(n => n.categoria === currentFilter);
+    }
+    
+    const searchTerm = searchInput?.value.toLowerCase() || '';
+    if (searchTerm) {
+      filtered = filtered.filter(n => 
+        n.titulo?.toLowerCase().includes(searchTerm) ||
+        n.contenido?.toLowerCase().includes(searchTerm) ||
+        n.resumen?.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:4rem">
+          <div style="font-size:4rem;margin-bottom:1rem">🔍</div>
+          <h3>No se encontraron noticias</h3>
+          <p>Intenta con otros términos de búsqueda o categoría.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    let html = '';
+    filtered.forEach(noticia => {
+      html += buildNewsCard(noticia.id, noticia);
+    });
+    container.innerHTML = html;
+  }
+  
+  // Cargar noticias desde Firebase
+  console.log('🔄 Cargando noticias...');
+  
+  const q = query(collection(db, 'noticias'), orderBy('fechaCreacion', 'desc'));
+  
+  onSnapshot(q, (snap) => {
+    console.log(`📊 Se encontraron ${snap.size} noticias`);
+    
+    if (snap.empty) {
+      container.innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:4rem">
+          <div style="font-size:4rem;margin-bottom:1rem">📰</div>
+          <h3>No hay noticias aún</h3>
+          <p>Próximamente se publicarán novedades del Consejo Estudiantil.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    allNoticias = [];
+    snap.forEach(doc => {
+      allNoticias.push({ id: doc.id, ...doc.data() });
+    });
+    
+    buildTabs(allNoticias);
+    filterNoticias();
+    console.log('✅ Noticias renderizadas correctamente');
+    
+  }, (error) => {
+    console.error('❌ Error al cargar noticias:', error);
+    container.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:4rem;color:#ef4444">
+        <div style="font-size:3rem;margin-bottom:1rem">⚠️</div>
+        <h3>Error al cargar noticias</h3>
+        <p>${error.message}</p>
+        <p>Verifica que estás conectado a Internet y que Firebase está configurado correctamente.</p>
+      </div>
+    `;
+  });
+  
+  // Búsqueda en tiempo real
+  if (searchInput) {
+    searchInput.addEventListener('input', filterNoticias);
+  }
+</script>
+
+</body>
+</html>

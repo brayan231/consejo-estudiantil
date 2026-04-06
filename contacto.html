@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacto — Consejo Estudiantil</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+<div id="toast-container"></div>
+
+<header class="site-header">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">🎓</div>
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">Consejo Estudiantil</span>
+        <span class="nav-logo-sub">Instituto Pedagógico</span>
+      </div>
+    </a>
+    <nav class="nav-links" id="nav-links">
+      <a href="index.html"      class="nav-link">Inicio</a>
+      <a href="noticias.html"   class="nav-link">Noticias</a>
+      <a href="eventos.html"    class="nav-link">Eventos</a>
+      <a href="propuestas.html" class="nav-link">Propuestas</a>
+      <a href="votaciones.html" class="nav-link">Votaciones</a>
+      <a href="contacto.html"   class="nav-link">Contacto</a>
+      <a href="admin.html"      class="nav-admin-btn">⚙ Admin</a>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main class="page-wrapper">
+  <div class="page-hero">
+    <div class="container page-hero-content">
+      <div class="page-hero-icon">💬</div>
+      <h1>Contacto y Opiniones</h1>
+      <p>Escríbenos directamente. Queremos escucharte y mejorar juntos.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="contact-card reveal">
+        <div class="contact-card-split">
+
+          <!-- Lado izquierdo -->
+          <div class="contact-side">
+            <h3>¿Cómo podemos ayudarte?</h3>
+            <p>El Consejo Estudiantil está comprometido con escuchar cada voz. Usa este formulario para enviarnos tus comentarios, sugerencias, quejas o simplemente saludarnos.</p>
+
+            <div class="contact-info-item">
+              <div class="ci-icon">📍</div>
+              <div>
+                <div style="font-weight:600;color:var(--white)">Ubicación</div>
+                <div>Aula del Consejo Estudiantil, pabellón principal</div>
+              </div>
+            </div>
+            <div class="contact-info-item">
+              <div class="ci-icon">🕐</div>
+              <div>
+                <div style="font-weight:600;color:var(--white)">Horario de atención</div>
+                <div>Lunes a Viernes: 8:00 am – 5:00 pm</div>
+              </div>
+            </div>
+            <div class="contact-info-item">
+              <div class="ci-icon">📧</div>
+              <div>
+                <div style="font-weight:600;color:var(--white)">Correo institucional</div>
+                <div><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1675797865737c79567f7865627f6263627938737263386673">[email&#160;protected]</a></div>
+              </div>
+            </div>
+            <div class="contact-info-item">
+              <div class="ci-icon">💬</div>
+              <div>
+                <div style="font-weight:600;color:var(--white)">Respuesta esperada</div>
+                <div>Respondemos en máximo 3 días hábiles</div>
+              </div>
+            </div>
+
+            <!-- Miembros -->
+            <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.12)">
+              <div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-300);margin-bottom:1rem">Consejo actual</div>
+              <div style="display:flex;flex-direction:column;gap:.75rem">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:36px;height:36px;background:rgba(244,161,0,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">🎓</div>
+                  <div>
+                    <div style="font-size:.88rem;font-weight:600;color:var(--white)">Presidente</div>
+                    <div style="font-size:.78rem;color:rgba(255,255,255,.55)">Representante estudiantil</div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:36px;height:36px;background:rgba(244,161,0,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">📚</div>
+                  <div>
+                    <div style="font-size:.88rem;font-weight:600;color:var(--white)">Secretario Académico</div>
+                    <div style="font-size:.78rem;color:rgba(255,255,255,.55)">Área académica</div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:36px;height:36px;background:rgba(244,161,0,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">⚽</div>
+                  <div>
+                    <div style="font-size:.88rem;font-weight:600;color:var(--white)">Vocal Deportivo</div>
+                    <div style="font-size:.78rem;color:rgba(255,255,255,.55)">Área deportiva</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lado derecho: formulario -->
+          <div class="contact-form-side">
+            <div id="form-success" class="alert success hidden mb-3">
+              <span class="alert-icon">✅</span>
+              <div>
+                <strong>¡Mensaje enviado!</strong><br>
+                <span style="font-size:.85rem">Gracias por contactarnos. Te responderemos pronto.</span>
+              </div>
+            </div>
+
+            <form id="form-contacto" novalidate>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="c-nombre">Nombre <span class="req">*</span></label>
+                  <input class="form-control" type="text" id="c-nombre" name="nombre" placeholder="Tu nombre completo">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="c-email">Correo electrónico</label>
+                  <input class="form-control" type="email" id="c-email" name="email" placeholder="correo@ejemplo.com">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="c-tipo">Tipo de mensaje <span class="req">*</span></label>
+                  <select class="form-control" id="c-tipo" name="tipo">
+                    <option value="">Seleccionar…</option>
+                    <option value="Sugerencia">💡 Sugerencia</option>
+                    <option value="Queja">⚠️ Queja</option>
+                    <option value="Consulta">❓ Consulta</option>
+                    <option value="Reconocimiento">🏆 Reconocimiento</option>
+                    <option value="Otro">📌 Otro</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="c-carrera">Carrera</label>
+                  <input class="form-control" type="text" id="c-carrera" name="carrera" placeholder="Tu especialidad">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="c-asunto">Asunto <span class="req">*</span></label>
+                <input class="form-control" type="text" id="c-asunto" name="asunto" placeholder="¿De qué trata tu mensaje?">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="c-mensaje">Mensaje <span class="req">*</span></label>
+                <textarea class="form-control" id="c-mensaje" name="mensaje" rows="5"
+                          placeholder="Escribe tu mensaje aquí. Sé lo más específico posible para que podamos ayudarte mejor." maxlength="800"></textarea>
+                <div class="char-counter" id="counter-mensaje">0 / 800</div>
+              </div>
+
+              <div class="form-group">
+                <label class="check-group">
+                  <input type="checkbox" id="c-anonimo" name="anonimo">
+                  <div class="check-box"></div>
+                  <span class="check-label">Enviar de forma anónima</span>
+                </label>
+              </div>
+
+              <button class="btn btn-primary w-full btn-lg" type="submit">
+                💬 Enviar mensaje
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="background:var(--white)">
+    <div class="container" style="max-width:760px">
+      <div class="text-center mb-4 reveal">
+        <div class="section-eyebrow">Ayuda</div>
+        <h2>Preguntas frecuentes</h2>
+      </div>
+      <div id="faq-list" style="display:flex;flex-direction:column;gap:1rem">
+        <!-- JS rendered -->
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2024 Consejo Estudiantil — Instituto Pedagógico</span>
+      <span>Hecho con <span class="footer-bottom-heart">♥</span> por y para los estudiantes</span>
+    </div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">
+  import './js/main.js';
+  import { db } from './js/firebase-config.js';
+  import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+  import { toastSuccess, toastError, setBtnLoading } from './js/ui.js';
+  import { initCharCounter } from './js/main.js';
+
+  // Char counter
+  initCharCounter(
+    document.getElementById('c-mensaje'),
+    document.getElementById('counter-mensaje'),
+    800
+  );
+
+  // Submit form
+  document.getElementById('form-contacto').addEventListener('submit', async e => {
+    e.preventDefault();
+    const form = e.target;
+    const btn  = form.querySelector('[type="submit"]');
+    const anonimo = form.querySelector('[name="anonimo"]').checked;
+
+    const data = {
+      nombre:  anonimo ? 'Anónimo' : (form.querySelector('[name="nombre"]').value.trim() || 'Anónimo'),
+      email:   anonimo ? '' : form.querySelector('[name="email"]').value.trim(),
+      tipo:    form.querySelector('[name="tipo"]').value,
+      carrera: form.querySelector('[name="carrera"]').value.trim(),
+      asunto:  form.querySelector('[name="asunto"]').value.trim(),
+      mensaje: form.querySelector('[name="mensaje"]').value.trim(),
+      anonimo,
+      leido:   false,
+      fechaCreacion: serverTimestamp()
+    };
+
+    if (!data.asunto || !data.mensaje || !data.tipo) {
+      toastError('Campos requeridos', 'Por favor completa los campos obligatorios.');
+      return;
+    }
+    if (data.mensaje.length < 10) {
+      toastError('Muy corto', 'El mensaje debe tener al menos 10 caracteres.');
+      return;
+    }
+
+    setBtnLoading(btn, true);
+    try {
+      await addDoc(collection(db, 'contacto'), data);
+      toastSuccess('¡Mensaje enviado!', 'El Consejo te responderá pronto.');
+      form.reset();
+      document.getElementById('form-success').classList.remove('hidden');
+      setTimeout(() => document.getElementById('form-success').classList.add('hidden'), 6000);
+    } catch(err) {
+      toastError('Error al enviar', 'Intenta nuevamente en unos momentos.');
+    } finally {
+      setBtnLoading(btn, false);
+    }
+  });
+
+  // FAQ
+  const faqs = [
+    { q: '¿Cuánto demoran en responder?', a: 'El Consejo responde en un máximo de 3 días hábiles. Para urgencias, acércate presencialmente al aula del Consejo.' },
+    { q: '¿Mis datos son confidenciales?', a: 'Sí. Toda la información que compartes es tratada con total confidencialidad. Puedes también marcar la opción "anónimo".' },
+    { q: '¿Puedo hacer un seguimiento de mi mensaje?', a: 'Por ahora el seguimiento es manual. Te recomendamos incluir tu correo para que podamos responderte directamente.' },
+    { q: '¿Qué tipo de temas puedo reportar?', a: 'Cualquier asunto relacionado con tu vida académica: infraestructura, servicios, trámites, actividades, etc.' },
+    { q: '¿El Consejo realmente lee todos los mensajes?', a: 'Sí. Cada mensaje es revisado por al menos un miembro del Consejo. Las quejas y consultas urgentes tienen prioridad.' },
+  ];
+
+  const faqList = document.getElementById('faq-list');
+  faqs.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'card reveal';
+    div.style.cssText = 'padding:0;overflow:hidden';
+    div.innerHTML = `
+      <button style="width:100%;text-align:left;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:none;border:none;cursor:pointer;font-family:var(--font-body)" onclick="this.parentElement.classList.toggle('faq-open')">
+        <span style="font-weight:700;color:var(--blue-900);font-size:.95rem">${item.q}</span>
+        <span class="faq-icon" style="font-size:1.2rem;transition:transform .3s;flex-shrink:0">＋</span>
+      </button>
+      <div class="faq-body" style="max-height:0;overflow:hidden;transition:max-height .35s ease">
+        <p style="padding:0 22px 18px;color:var(--gray-600);font-size:.9rem;line-height:1.7">${item.a}</p>
+      </div>`;
+    div.addEventListener('click', () => {
+      const body = div.querySelector('.faq-body');
+      const icon = div.querySelector('.faq-icon');
+      const open = div.classList.contains('faq-open');
+      body.style.maxHeight = open ? body.scrollHeight + 'px' : '0';
+      body.style.maxHeight = open ? '0' : body.scrollHeight + 'px';
+      icon.style.transform = open ? 'rotate(0)' : 'rotate(45deg)';
+    });
+    faqList.appendChild(div);
+  });
+</script>
+</body>
+</html>
