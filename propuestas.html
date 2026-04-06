@@ -253,7 +253,7 @@ const headerPlaceholder = document.getElementById('header-placeholder');
 
   let currentUser = null;
 
-  
+
 
   // Storage para votos de propuestas
   function getVoteStorage() {
@@ -338,52 +338,92 @@ const headerPlaceholder = document.getElementById('header-placeholder');
   }
 
   // Función para votar
-  async function votarPropuesta(propuestaId, tipo) {
-    if (!currentUser) {
-      toastError('Inicia sesión', 'Debes iniciar sesión para votar');
-      return;
-    }
-    
-    const myVote = getMyVote(propuestaId);
-    if (myVote) {
-      toastError('Ya votaste', 'Solo puedes votar una vez por propuesta');
-      return;
-    }
-    
-    try {
-      const propuestaRef = doc(db, 'propuestas', propuestaId);
-      const propuestaDoc = await getDoc(propuestaRef);
-      
-      if (!propuestaDoc.exists()) {
-        toastError('Error', 'Propuesta no encontrada');
-        return;
-      }
-      
-      const propuesta = propuestaDoc.data();
-      
-      // Verificar si ya votó (seguridad)
-      if (propuesta.votantes && propuesta.votantes[currentUser.uid]) {
-        toastError('Ya votaste', 'Ya has votado esta propuesta');
-        return;
-      }
-      
-      // Actualizar votos
-      const votosActualizados = { ...propuesta.votos };
-      votosActualizados[tipo] = (votosActualizados[tipo] || 0) + 1;
-      
-      await updateDoc(propuestaRef, {
-        [`votos.${tipo}`]: increment(1),
-        [`votantes.${currentUser.uid}`]: tipo
-      });
-      
-      saveVote(propuestaId, tipo);
-      toastSuccess('¡Voto registrado!', `Has votado con ${tipo === '👍' ? 'apoyo' : tipo === '👎' ? 'en contra' : 'una sugerencia'}`);
-      
-    } catch (error) {
-      console.error('Error al votar:', error);
-      toastError('Error', 'No se pudo registrar tu voto');
-    }
+  // Función para votar (CORREGIDA)
+async function votarPropuesta(propuestaId, tipo) {
+  if (!currentUser) {
+    toastError('Inicia sesión', 'Debes iniciar sesión para votar');
+    return;
   }
+  
+  const myVote = getMyVote(propuestaId);
+  if (myVote) {
+    toastError('Ya votaste', 'Solo puedes votar una vez por propuesta');
+    return;
+  }
+  
+  try {
+    const propuestaRef = doc(db, 'propuestas', propuestaId);
+    const propuestaDoc = await getDoc(propuestaRef);
+    
+    if (!propuestaDoc.exists()) {
+      toastError('Error', 'Propuesta no encontrada');
+      return;
+    }
+    
+    const propuesta = propuestaDoc.data();
+    
+    // Verificar si ya votó (seguridad)
+    if (propuesta.votantes && propuesta.votantes[currentUser.uid]) {
+      toastError('Ya votaste', 'Ya has votado esta propuesta');
+      return;
+    }
+    
+    // Obtener datos completos del usuario desde Firestore
+    let userData = {
+      uid: currentUser.uid,
+      email: currentUser.email,
+      nombre: currentUser.displayName || currentUser.email?.split('@')[0] || 'Usuario',
+      fotoURL: currentUser.photoURL || null,
+      fechaVoto: serverTimestamp()
+    };
+    
+    // Intentar obtener datos adicionales de la colección 'estudiantes'
+    try {
+      const userDoc = await getDoc(doc(db, 'estudiantes', currentUser.uid));
+      if (userDoc.exists()) {
+        const estudianteData = userDoc.data();
+        userData = {
+          ...userData,
+          nombre: estudianteData.nombre || userData.nombre,
+          carrera: estudianteData.carrera || '',
+          telefono: estudianteData.telefono || '',
+          dni: estudianteData.dni || ''
+        };
+      }
+    } catch (err) {
+      console.log('No se encontraron datos adicionales del estudiante');
+    }
+    
+    // ✅ CORREGIDO: Actualizar votos correctamente
+    const votosActuales = propuesta.votos || { '👍': 0, '👎': 0, '💡': 0 };
+    const nuevosVotos = {
+      '👍': votosActuales['👍'] + (tipo === '👍' ? 1 : 0),
+      '👎': votosActuales['👎'] + (tipo === '👎' ? 1 : 0),
+      '💡': votosActuales['💡'] + (tipo === '💡' ? 1 : 0)
+    };
+    
+    // Actualizar votos en Firestore
+    await updateDoc(propuestaRef, {
+      'votos': nuevosVotos,
+      [`votantes.${currentUser.uid}`]: {
+        tipo: tipo,
+        email: userData.email,
+        nombre: userData.nombre,
+        carrera: userData.carrera || '',
+        fotoURL: userData.fotoURL,
+        fechaVoto: serverTimestamp()
+      }
+    });
+    
+    saveVote(propuestaId, tipo);
+    toastSuccess('¡Voto registrado!', `Has votado con ${tipo === '👍' ? 'apoyo' : tipo === '👎' ? 'en contra' : 'una sugerencia'}`);
+    
+  } catch (error) {
+    console.error('Error al votar:', error);
+    toastError('Error', 'No se pudo registrar tu voto');
+  }
+}
+
 
   // Cargar propuestas públicas en tiempo real
   function loadPublicPropuestas(container) {

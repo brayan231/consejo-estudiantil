@@ -1320,19 +1320,36 @@ function loadPropuestas() {
       for (const docSnap of querySnapshot.docs) {
         const propuesta = { id: docSnap.id, ...docSnap.data() };
         
-        const votosPositivos = propuesta.votosPositivos || 0;
-        const votosNegativos = propuesta.votosNegativos || 0;
-        const totalVotos = votosPositivos + votosNegativos;
+        // ✅ LEER ESTRUCTURA CORRECTA (igual que en propuestas.html)
+        const votos = propuesta.votos || { '👍': 0, '👎': 0, '💡': 0 };
+        const votosPositivos = votos['👍'] || 0;
+        const votosNegativos = votos['👎'] || 0;
+        const votosSugerencia = votos['💡'] || 0;
+        const totalVotos = votosPositivos + votosNegativos + votosSugerencia;
         const porcentajeApoyo = totalVotos > 0 ? Math.round((votosPositivos / totalVotos) * 100) : 0;
-        const votantesCount = propuesta.votosDetalle ? Object.keys(propuesta.votosDetalle).length : 0;
+        
+        // ✅ LEER VOTANTES CORRECTAMENTE
+        const votantes = propuesta.votantes || {};
+        const votantesCount = Object.keys(votantes).length;
+        
+        // Separar votantes por tipo
+        const votantesPositivos = [];
+        const votantesNegativos = [];
+        const votantesSugerencia = [];
+        
+        for (const [userId, tipo] of Object.entries(votantes)) {
+          if (tipo === '👍') votantesPositivos.push(userId);
+          else if (tipo === '👎') votantesNegativos.push(userId);
+          else if (tipo === '💡') votantesSugerencia.push(userId);
+        }
         
         html += `
-          <div class="proposal-card" data-propuesta-id="${propuesta.id}">
-            <div class="proposal-card-header">
+          <div class="proposal-card" data-propuesta-id="${propuesta.id}" style="margin-bottom:1rem;background:rgba(10,22,40,0.6);border:1px solid rgba(255,255,255,0.1);border-radius:16px;overflow:hidden">
+            <div class="proposal-card-header" style="padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem">
               <div>
-                <div class="proposal-card-title">${escapeHtml(propuesta.titulo)}</div>
-                <div class="text-muted" style="font-size:0.75rem">
-                  👤 ${escapeHtml(propuesta.autor)} · 📚 ${escapeHtml(propuesta.carrera || 'No especificada')} · 
+                <div class="proposal-card-title" style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:0.25rem">${escapeHtml(propuesta.titulo)}</div>
+                <div class="text-muted" style="font-size:0.7rem">
+                  👤 ${escapeHtml(propuesta.autor || 'Anónimo')} · 📚 ${escapeHtml(propuesta.carrera || 'No especificada')} · 
                   📅 ${propuesta.fechaCreacion?.toDate().toLocaleDateString() || 'Fecha no disponible'}
                   ${propuesta.userEmail ? ` · 📧 ${escapeHtml(propuesta.userEmail)}` : ''}
                 </div>
@@ -1342,20 +1359,21 @@ function loadPropuestas() {
               </span>
             </div>
             
-            <div class="proposal-card-body">
-              <div style="margin-bottom:0.75rem">
+            <div class="proposal-card-body" style="padding:1rem 1.5rem">
+              <div style="margin-bottom:0.5rem">
                 <span class="badge badge-blue">${escapeHtml(propuesta.categoria) || 'General'}</span>
               </div>
-              <div style="margin-bottom:0.75rem">${escapeHtml(propuesta.contenido?.substring(0, 200))}${propuesta.contenido?.length > 200 ? '...' : ''}</div>
+              <div style="color:#cbd5e1;line-height:1.5;font-size:0.85rem">${escapeHtml(propuesta.contenido?.substring(0, 200))}${propuesta.contenido?.length > 200 ? '...' : ''}</div>
               
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:0.75rem;margin-top:0.5rem">
+              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:0.75rem;margin-top:0.75rem">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.5rem">
-                  <div class="flex gap-2">
+                  <div class="flex gap-3">
                     <span style="color:#34d399">👍 ${votosPositivos} a favor</span>
                     <span style="color:#f87171">👎 ${votosNegativos} en contra</span>
+                    <span style="color:#fbbf24">💡 ${votosSugerencia} sugerencias</span>
                   </div>
                   <div class="flex gap-1">
-                    <div style="width:60px;height:6px;background:rgba(255,255,255,0.1);border-radius:99px;overflow:hidden">
+                    <div style="width:80px;height:6px;background:rgba(255,255,255,0.1);border-radius:99px;overflow:hidden">
                       <div style="width:${porcentajeApoyo}%;height:100%;background:#34d399;border-radius:99px"></div>
                     </div>
                     <span class="text-muted" style="font-size:0.7rem">${porcentajeApoyo}% apoyo</span>
@@ -1365,15 +1383,13 @@ function loadPropuestas() {
               </div>
             </div>
             
-            <div class="proposal-card-footer">
-              <div class="flex gap-1">
-                <button class="btn btn-outline btn-sm" onclick="window.verDetallePropuesta('${propuesta.id}')">
-                  👁️ Ver detalles (${totalVotos} votos)
-                </button>
-                <button class="btn btn-success btn-sm" onclick="window.updateEstadoPropuesta('${propuesta.id}', 'Aprobada')">✓ Aprobar</button>
-                <button class="btn btn-danger btn-sm" onclick="window.updateEstadoPropuesta('${propuesta.id}', 'Rechazada')">✗ Rechazar</button>
-                <button class="btn btn-outline btn-sm" onclick="window.deletePropuesta('${propuesta.id}')">🗑</button>
-              </div>
+            <div class="proposal-card-footer" style="padding:0.75rem 1.5rem;border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:0.5rem;flex-wrap:wrap">
+              <button class="btn btn-outline btn-sm" onclick="window.verDetallePropuesta('${propuesta.id}')">
+              👁️ Ver detalles (${totalVotos} votos)
+              </button>
+              <button class="btn btn-success btn-sm" onclick="window.updateEstadoPropuesta('${propuesta.id}', 'Aprobada')">✓ Aprobar</button>
+              <button class="btn btn-danger btn-sm" onclick="window.updateEstadoPropuesta('${propuesta.id}', 'Rechazada')">✗ Rechazar</button>
+              <button class="btn btn-outline btn-sm" onclick="window.deletePropuesta('${propuesta.id}')">🗑 Eliminar</button>
             </div>
           </div>
         `;
@@ -1396,6 +1412,7 @@ function loadPropuestas() {
   }
 }
 
+
 window.verDetallePropuesta = async (propuestaId) => {
   const modal = document.getElementById('modal-propuesta-detalle');
   const content = document.getElementById('modal-propuesta-content');
@@ -1413,26 +1430,57 @@ window.verDetallePropuesta = async (propuestaId) => {
     }
     
     const propuesta = propuestaDoc.data();
-    const votosPositivos = propuesta.votosPositivos || 0;
-    const votosNegativos = propuesta.votosNegativos || 0;
-    const totalVotos = votosPositivos + votosNegativos;
-    const porcentajeApoyo = totalVotos > 0 ? Math.round((votosPositivos / totalVotos) * 100) : 0;
-    const votosDetalle = propuesta.votosDetalle || {};
+    const votos = propuesta.votos || { '👍': 0, '👎': 0, '💡': 0 };
+    const votantes = propuesta.votantes || {};
+    
+    const votosPositivos = votos['👍'] || 0;
+    const votosNegativos = votos['👎'] || 0;
+    const votosSugerencia = votos['💡'] || 0;
+    const totalVotos = votosPositivos + votosNegativos + votosSugerencia;
+    
+    // Separar votantes por tipo con datos completos
     const votantesPositivos = [];
     const votantesNegativos = [];
+    const votantesSugerencia = [];
     
-    for (const [userId, tipo] of Object.entries(votosDetalle)) {
-      if (tipo === 'positivo') votantesPositivos.push(userId);
-      else if (tipo === 'negativo') votantesNegativos.push(userId);
+    for (const [userId, votoInfo] of Object.entries(votantes)) {
+      // Si votoInfo es un objeto con datos completos
+      if (typeof votoInfo === 'object' && votoInfo !== null) {
+        const votante = {
+          uid: userId,
+          nombre: votoInfo.nombre || 'Usuario',
+          email: votoInfo.email || 'No disponible',
+          carrera: votoInfo.carrera || 'No especificada',
+          tipo: votoInfo.tipo,
+          fechaVoto: votoInfo.fechaVoto
+        };
+        
+        if (votoInfo.tipo === '👍') votantesPositivos.push(votante);
+        else if (votoInfo.tipo === '👎') votantesNegativos.push(votante);
+        else if (votoInfo.tipo === '💡') votantesSugerencia.push(votante);
+      } else {
+        // Versión antigua (solo el tipo)
+        const votante = {
+          uid: userId,
+          nombre: 'Usuario',
+          email: 'No disponible',
+          carrera: 'No especificada',
+          tipo: votoInfo,
+          fechaVoto: null
+        };
+        
+        if (votoInfo === '👍') votantesPositivos.push(votante);
+        else if (votoInfo === '👎') votantesNegativos.push(votante);
+        else if (votoInfo === '💡') votantesSugerencia.push(votante);
+      }
     }
     
     let detallesHtml = `
       <div style="margin-bottom:1.5rem">
         <h4 style="color:#fff;margin-bottom:0.5rem;font-size:1.25rem">${escapeHtml(propuesta.titulo)}</h4>
         <div class="text-muted" style="margin-bottom:1rem">
-          👤 ${escapeHtml(propuesta.autor)} · 📚 ${escapeHtml(propuesta.carrera || 'No especificada')} · 
+          👤 ${escapeHtml(propuesta.autor || 'Anónimo')} · 📚 ${escapeHtml(propuesta.carrera || 'No especificada')} · 
           📅 ${propuesta.fechaCreacion?.toDate().toLocaleString() || 'Fecha no disponible'}
-          ${propuesta.userEmail ? `<br>📧 ${escapeHtml(propuesta.userEmail)}` : ''}
         </div>
         <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;margin-bottom:1rem">
           <p style="color:#cbd5e1;line-height:1.6;margin:0">${escapeHtml(propuesta.contenido)}</p>
@@ -1440,7 +1488,7 @@ window.verDetallePropuesta = async (propuestaId) => {
         
         <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;margin-bottom:1rem">
           <h5 style="color:#00c8f0;margin-bottom:0.75rem">📊 Resumen de votación</h5>
-          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:1rem">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem">
             <div style="text-align:center">
               <div style="font-size:2rem">👍</div>
               <div style="font-size:1.5rem;color:#34d399">${votosPositivos}</div>
@@ -1451,50 +1499,53 @@ window.verDetallePropuesta = async (propuestaId) => {
               <div style="font-size:1.5rem;color:#f87171">${votosNegativos}</div>
               <div class="text-muted" style="font-size:0.75rem">En contra</div>
             </div>
-          </div>
-          <div style="margin-top:0.5rem">
-            <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:0.25rem">
-              <span>Porcentaje de apoyo</span>
-              <span style="color:#34d399">${porcentajeApoyo}%</span>
-            </div>
-            <div style="background:rgba(255,255,255,0.1);border-radius:99px;height:8px;overflow:hidden">
-              <div style="background:#34d399;width:${porcentajeApoyo}%;height:100%;border-radius:99px"></div>
+            <div style="text-align:center">
+              <div style="font-size:2rem">💡</div>
+              <div style="font-size:1.5rem;color:#fbbf24">${votosSugerencia}</div>
+              <div class="text-muted" style="font-size:0.75rem">Sugerencias</div>
             </div>
           </div>
-          <div class="text-muted" style="font-size:0.75rem;margin-top:0.75rem">Total de votos: ${totalVotos} · ${Object.keys(votosDetalle).length} votante(s)</div>
+          <div class="text-muted" style="font-size:0.75rem;margin-top:0.75rem">Total de votos: ${totalVotos}</div>
         </div>
       </div>
     `;
     
-    if (votantesPositivos.length > 0) {
-      detallesHtml += `
-        <div style="margin-bottom:1.5rem;background:rgba(52,211,153,0.1);border-radius:12px;padding:1rem">
-          <h5 style="color:#34d399;margin-bottom:0.75rem">👍 Votaron a favor (${votantesPositivos.length})</h5>
-          <div style="max-height:200px;overflow-y:auto">
-            ${votantesPositivos.map(uid => `
-              <div style="padding:0.5rem;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.8rem">
-                🆔 ${escapeHtml(uid)}
-              </div>
-            `).join('')}
+    // Función para generar tabla de votantes
+    function generarTablaVotantes(votantes, titulo, color) {
+      if (!votantes || votantes.length === 0) return '';
+      
+      return `
+        <div style="margin-bottom:1.5rem;background:${color}0d;border-radius:12px;padding:1rem;border:1px solid ${color}30">
+          <h5 style="color:${color};margin-bottom:0.75rem">${titulo} (${votantes.length})</h5>
+          <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:0.8rem">
+              <thead>
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.1)">
+                  <th style="text-align:left;padding:0.5rem">👤 Estudiante</th>
+                  <th style="text-align:left;padding:0.5rem">📧 Correo</th>
+                  <th style="text-align:left;padding:0.5rem">📚 Carrera</th>
+                  <th style="text-align:left;padding:0.5rem">🆔 UID</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${votantes.map(v => `
+                  <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+                    <td style="padding:0.5rem">${escapeHtml(v.nombre)}</td>
+                    <td style="padding:0.5rem">${escapeHtml(v.email)}</td>
+                    <td style="padding:0.5rem">${escapeHtml(v.carrera)}</td>
+                    <td style="padding:0.5rem;font-family:monospace;font-size:0.7rem">${escapeHtml(v.uid.substring(0, 8))}...</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
           </div>
         </div>
       `;
     }
     
-    if (votantesNegativos.length > 0) {
-      detallesHtml += `
-        <div style="margin-bottom:1rem;background:rgba(239,68,68,0.1);border-radius:12px;padding:1rem">
-          <h5 style="color:#f87171;margin-bottom:0.75rem">👎 Votaron en contra (${votantesNegativos.length})</h5>
-          <div style="max-height:200px;overflow-y:auto">
-            ${votantesNegativos.map(uid => `
-              <div style="padding:0.5rem;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.8rem">
-                🆔 ${escapeHtml(uid)}
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
+    detallesHtml += generarTablaVotantes(votantesPositivos, '👍 Votaron a favor', '#34d399');
+    detallesHtml += generarTablaVotantes(votantesNegativos, '👎 Votaron en contra', '#f87171');
+    detallesHtml += generarTablaVotantes(votantesSugerencia, '💡 Sugirieron mejoras', '#fbbf24');
     
     if (totalVotos === 0) {
       detallesHtml += `
