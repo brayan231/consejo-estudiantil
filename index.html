@@ -169,8 +169,6 @@
   import { onAuthChange, crearAdminSiNoExiste } from './js/auth.js';
   import { cargarFooter } from './js/footer.js';
 
-  // Ejecutar una sola vez para crear el admin
-  crearAdminSiNoExiste();
 
   // Cargar header dinámicamente
   const headerPlaceholder = document.getElementById('header-placeholder');
@@ -450,16 +448,7 @@
   cargarContadores();
   initParticles();
   
-  // Navbar toggle
-  const toggle = document.querySelector('.nav-toggle');
-  const navLinks = document.querySelector('.nav-links');
-  if (toggle && navLinks) {
-    toggle.addEventListener('click', () => {
-      navLinks.classList.toggle('open');
-      toggle.classList.toggle('open');
-    });
-  }
-  
+
   // Scroll reveal
   const revealElements = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {

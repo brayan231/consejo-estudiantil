@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentos — Consejo Estudiantil</title>
+  <meta name="description" content="Documentos oficiales, reglamentos y actas del Consejo Estudiantil del Instituto Pedagógico.">
+  <meta property="og:title" content="Documentos Oficiales — Consejo Estudiantil">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .page-hero {
+      padding: 120px 0 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(16,185,129,.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .page-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--cyan-400, #00c8f0);
+      background: rgba(0,200,240,.08);
+      border: 1px solid rgba(0,200,240,.2);
+      border-radius: 999px;
+      padding: 6px 16px;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── BUSCADOR ── */
+    .doc-search-wrap {
+      max-width: 520px;
+      margin: 2rem auto 0;
+      position: relative;
+    }
+    .doc-search {
+      width: 100%;
+      padding: 13px 18px 13px 46px;
+      background: rgba(10,22,40,.7);
+      border: 1px solid var(--border, rgba(255,255,255,.1));
+      border-radius: 999px;
+      color: var(--white, #fff);
+      font-size: .9rem;
+      outline: none;
+      transition: border-color .25s;
+      box-sizing: border-box;
+    }
+    .doc-search:focus { border-color: rgba(0,200,240,.5); }
+    .doc-search::placeholder { color: rgba(255,255,255,.3); }
+    .search-icon { position: absolute; left: 17px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+
+    /* ── CATEGORÍAS ── */
+    .cat-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-bottom: 2rem;
+    }
+    .cat-tab {
+      padding: 7px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border, rgba(255,255,255,.1));
+      background: transparent;
+      color: var(--text-muted);
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .25s;
+    }
+    .cat-tab:hover, .cat-tab.active {
+      background: rgba(0,200,240,.12);
+      border-color: rgba(0,200,240,.4);
+      color: #00c8f0;
+    }
+
+    /* ── DOCUMENTO CARD ── */
+    .doc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.25rem;
+    }
+    .doc-card {
+      background: rgba(10,22,40,.7);
+      border: 1px solid var(--border, rgba(255,255,255,.08));
+      border-radius: 16px;
+      padding: 1.25rem;
+      transition: border-color .3s, transform .3s;
+    }
+    .doc-card:hover { 
+      border-color: rgba(0,200,240,.5); 
+      transform: translateY(-3px);
+      background: rgba(10,22,40,.85);
+    }
+    .doc-card.hidden { display: none; }
+
+    .doc-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .doc-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .icon-pdf  { background: rgba(239,68,68,.2); color: #f87171; }
+    .icon-docx { background: rgba(59,130,246,.2); color: #60a5fa; }
+    .icon-xlsx { background: rgba(16,185,129,.2); color: #34d399; }
+    .icon-link { background: rgba(139,92,246,.2); color: #a78bfa; }
+
+    .doc-info { flex: 1; min-width: 0; }
+    .doc-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white, #fff);
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+      word-break: break-word;
+      white-space: normal;
+    }
+    .doc-meta {
+      font-size: .75rem;
+      color: var(--text-muted, rgba(255,255,255,.5));
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+    }
+    .doc-badge {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+    .badge-reglamento { background: rgba(239,68,68,.15); color: #f87171; }
+    .badge-acta       { background: rgba(0,200,240,.15); color: #00c8f0; }
+    .badge-informe    { background: rgba(16,185,129,.15); color: #34d399; }
+    .badge-formulario { background: rgba(139,92,246,.15); color: #a78bfa; }
+    .badge-otro       { background: rgba(156,163,175,.15); color: #9ca3af; }
+
+    .doc-description {
+      font-size: .75rem;
+      color: var(--text-muted, rgba(255,255,255,.4));
+      margin: 0.75rem 0;
+      line-height: 1.5;
+    }
+
+    .doc-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .btn-doc {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.25s;
+      border: none;
+      background: none;
+    }
+
+    .btn-view {
+      background: rgba(0,200,240,0.12);
+      border: 1px solid rgba(0,200,240,0.3);
+      color: #00c8f0;
+    }
+    .btn-view:hover {
+      background: rgba(0,200,240,0.22);
+      transform: translateY(-2px);
+    }
+
+    .btn-download {
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #34d399;
+    }
+    .btn-download:hover {
+      background: rgba(16,185,129,0.22);
+      transform: translateY(-2px);
+    }
+
+    /* ── ESTADO VACÍO ── */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
+      display: none;
+    }
+    .empty-state.visible { display: block; }
+
+    /* Loading spinner */
+    .loading-spinner {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+    .loading-spinner::before {
+      content: '';
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(0,200,240,.3);
+      border-top-color: #00c8f0;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Upload admin */
+    .upload-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: 10px 20px;
+      background: rgba(0,200,240,.12);
+      border: 1px solid rgba(0,200,240,.3);
+      border-radius: 999px;
+      color: #00c8f0;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .25s;
+      text-decoration: none;
+    }
+    .upload-btn:hover { background: rgba(0,200,240,.22); transform: translateY(-2px); }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s, transform .6s; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .section-eyebrow { font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--cyan-400,#00c8f0); margin-bottom:.5rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+    .mb-4 { margin-bottom: 2rem; }
+    .text-muted { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<div id="toast-container"></div>
+<div id="header-placeholder"></div>
+
+<main class="page-wrapper">
+
+  <!-- ── HERO ── -->
+  <section class="page-hero">
+    <div class="container">
+      <div class="page-eyebrow">📄 Documentos oficiales</div>
+      <h1>Transparencia<br><span>y documentación</span></h1>
+      <p style="color:var(--text-muted);max-width:500px;margin:.75rem auto 0;font-size:1.05rem;line-height:1.8">
+        Accede a todos los documentos oficiales del Consejo: reglamentos, actas de reuniones, informes y formularios.
+      </p>
+      <div class="doc-search-wrap reveal">
+        <span class="search-icon">🔍</span>
+        <input class="doc-search" type="text" id="doc-search" placeholder="Buscar documento..." autocomplete="off">
+      </div>
+    </div>
+  </section>
+
+  <!-- ── DOCUMENTOS PRINCIPALES ── -->
+  <section class="section">
+    <div class="container">
+
+      <div class="flex" style="align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+        <div>
+          <div class="section-eyebrow">Archivos</div>
+          <h2 style="margin:0">Documentos clave</h2>
+        </div>
+        <div id="admin-actions" style="display:none">
+          <a href="admin.html" class="upload-btn">➕ Subir documento</a>
+        </div>
+      </div>
+
+      <!-- Filtros -->
+      <div class="cat-tabs reveal">
+        <button class="cat-tab active" data-cat="todos">📋 Todos</button>
+        <button class="cat-tab" data-cat="reglamento">📜 Reglamentos</button>
+        <button class="cat-tab" data-cat="acta">📝 Actas</button>
+        <button class="cat-tab" data-cat="informe">📊 Informes</button>
+        <button class="cat-tab" data-cat="formulario">📎 Formularios</button>
+        <button class="cat-tab" data-cat="otro">📄 Otros</button>
+      </div>
+
+      <!-- Grid de documentos (dinámico desde Firebase) -->
+      <div class="doc-grid reveal" id="doc-grid">
+        <div class="loading-spinner">Cargando documentos...</div>
+      </div>
+
+      <!-- Estado vacío -->
+      <div class="empty-state" id="empty-state">
+        <div style="font-size:3rem;margin-bottom:1rem">📁</div>
+        <h3 style="color:var(--white)">No hay documentos disponibles</h3>
+        <p>No se encontraron documentos que coincidan con tu búsqueda.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── AVISO TRANSPARENCIA ── -->
+  <section class="section text-center">
+    <div class="container reveal" style="max-width:640px">
+      <div style="font-size:2.5rem;margin-bottom:1rem">🔒</div>
+      <h2 style="color:var(--white)">Compromiso con la transparencia</h2>
+      <p style="color:var(--text-muted);line-height:1.8;margin-bottom:2rem">
+        Todos los documentos públicos son accesibles para cualquier estudiante. 
+        Si necesitas algún documento adicional, contáctanos.
+      </p>
+      <a href="contacto.html" class="btn btn-outline">Solicitar un documento →</a>
+    </div>
+  </section>
+
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script type="module">
+  import { db, auth } from './js/firebase-config.js';
+  import { 
+    collection, getDocs, query, orderBy, onSnapshot 
+  } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  import { onAuthChange } from './js/auth.js';
+  import { cargarFooter } from './js/footer.js';
+  import { toastError, toastSuccess } from './js/ui.js';
+
+  // Header
+  const hp = document.getElementById('header-placeholder');
+  if (hp) {
+    const r = await fetch('components/header.html');
+    hp.innerHTML = await r.text();
+    onAuthChange();
+    const toggle = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    if (toggle && navLinks) toggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+      toggle.classList.toggle('open');
+    });
+  }
+  cargarFooter();
+
+  // Mostrar botón "Subir documento" si es admin
+  onAuthStateChanged(auth, async user => {
+    if (!user) return;
+    try {
+      const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js");
+      const adminDoc = await getDoc(doc(db, 'admins', user.uid));
+      if (adminDoc.exists()) {
+        document.getElementById('admin-actions').style.display = 'block';
+      }
+    } catch(e) {
+      console.log('Error verificando admin:', e);
+    }
+  });
+
+  // Función para obtener URL de descarga directa desde Google Drive
+  function obtenerUrlDescarga(url) {
+    if (!url) return null;
+    
+    // Si es URL de Google Drive
+    if (url.includes('drive.google.com')) {
+      let fileId = '';
+      
+      if (url.includes('/file/d/')) {
+        fileId = url.split('/file/d/')[1].split('/')[0];
+      } else if (url.includes('id=')) {
+        fileId = url.split('id=')[1].split('&')[0];
+      } else if (url.includes('uc?id=')) {
+        fileId = url.split('uc?id=')[1].split('&')[0];
+      } else if (url.includes('open?id=')) {
+        fileId = url.split('open?id=')[1].split('&')[0];
+      } else {
+        const match = url.match(/[-\w]{25,}/);
+        if (match) fileId = match[0];
+      }
+      
+      if (fileId) {
+        // URL de descarga directa de Google Drive
+        return `https://drive.google.com/uc?export=download&id=${fileId}`;
+      }
+    }
+    
+    return url;
+  }
+
+  // Función para obtener URL de vista/previsualización
+  function obtenerUrlVista(url) {
+    if (!url) return null;
+    
+    if (url.includes('drive.google.com')) {
+      let fileId = '';
+      
+      if (url.includes('/file/d/')) {
+        fileId = url.split('/file/d/')[1].split('/')[0];
+      } else if (url.includes('id=')) {
+        fileId = url.split('id=')[1].split('&')[0];
+      } else if (url.includes('uc?id=')) {
+        fileId = url.split('uc?id=')[1].split('&')[0];
+      } else if (url.includes('open?id=')) {
+        fileId = url.split('open?id=')[1].split('&')[0];
+      } else {
+        const match = url.match(/[-\w]{25,}/);
+        if (match) fileId = match[0];
+      }
+      
+      if (fileId) {
+        return `https://drive.google.com/file/d/${fileId}/preview`;
+      }
+    }
+    
+    return url;
+  }
+
+  // Mapeo de íconos y colores según tipo de archivo
+  const iconMap = { 
+    pdf: '📕', 
+    docx: '📘', 
+    xlsx: '📊', 
+    link: '🔗' 
+  };
+  
+  const colorMap = { 
+    pdf: 'icon-pdf', 
+    docx: 'icon-docx', 
+    xlsx: 'icon-xlsx', 
+    link: 'icon-link' 
+  };
+
+  const categoriaLabels = {
+    'reglamento': 'Reglamento',
+    'acta': 'Acta',
+    'informe': 'Informe',
+    'formulario': 'Formulario',
+    'otro': 'Otro'
+  };
+
+  // Cargar documentos desde Firestore en tiempo real
+  const docGrid = document.getElementById('doc-grid');
+  let allDocuments = [];
+
+  function cargarDocumentosFirestore() {
+    const q = query(collection(db, 'documentos'), orderBy('fechaCreacion', 'desc'));
+    
+    onSnapshot(q, (snapshot) => {
+      if (snapshot.empty) {
+        docGrid.innerHTML = '';
+        document.getElementById('empty-state').classList.add('visible');
+        return;
+      }
+      
+      document.getElementById('empty-state').classList.remove('visible');
+      
+      // Filtrar solo documentos públicos (publico === true o no especificado)
+      allDocuments = snapshot.docs
+        .map(docSnap => ({ id: docSnap.id, ...docSnap.data() }))
+        .filter(doc => doc.publico !== false);
+      
+      renderDocumentos(allDocuments);
+      
+    }, (error) => {
+      console.error('Error cargando documentos:', error);
+      docGrid.innerHTML = '<div style="text-align:center;padding:2rem;color:#ef4444">Error al cargar documentos</div>';
+    });
+  }
+
+  function renderDocumentos(documentos) {
+    if (!documentos || documentos.length === 0) {
+      docGrid.innerHTML = '';
+      document.getElementById('empty-state').classList.add('visible');
+      return;
+    }
+    
+    docGrid.innerHTML = documentos.map(doc => {
+      const tipo = doc.tipo || 'pdf';
+      const categoria = doc.categoria || 'otro';
+      const categoriaLabel = categoriaLabels[categoria] || 'Documento';
+      const año = doc.fechaDocumento ? new Date(doc.fechaDocumento).getFullYear() : '';
+      const urlOriginal = doc.url || '#';
+      const urlVista = obtenerUrlVista(urlOriginal);
+      const urlDescarga = obtenerUrlDescarga(urlOriginal);
+      const esDrive = urlOriginal.includes('drive.google.com');
+      
+      return `
+        <div class="doc-card" data-cat="${categoria}" data-nombre="${escapeHtml(doc.nombre)}" data-descripcion="${escapeHtml(doc.descripcion || '')}">
+          <div class="doc-header">
+            <div class="doc-icon-wrap ${colorMap[tipo] || 'icon-pdf'}">${iconMap[tipo] || '📄'}</div>
+            <div class="doc-info">
+              <div class="doc-name">${escapeHtml(doc.nombre)}</div>
+              <div class="doc-meta">
+                <span>${tipo.toUpperCase()}${año ? ` · ${año}` : ''}</span>
+              </div>
+              <span class="doc-badge badge-${categoria}">${categoriaLabel}</span>
+              ${doc.descripcion ? `<div class="doc-description">${escapeHtml(doc.descripcion.substring(0, 100))}${doc.descripcion.length > 100 ? '...' : ''}</div>` : ''}
+            </div>
+          </div>
+          <div class="doc-actions">
+            <a href="${escapeHtml(urlVista)}" target="_blank" class="btn-doc btn-view">
+              👁️ Ver documento
+            </a>
+            <a href="${escapeHtml(urlDescarga)}" download class="btn-doc btn-download" ${!esDrive ? 'target="_blank"' : ''}>
+              ⬇️ Descargar
+            </a>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    filterDocs();
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, function(m) {
+      const map = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+      return map[m];
+    });
+  }
+
+  // Filtros de documentos
+  function filterDocs() {
+    const activeCat = document.querySelector('.cat-tab.active')?.dataset.cat || 'todos';
+    const searchTerm = document.getElementById('doc-search')?.value.toLowerCase().trim() || '';
+    
+    const cards = document.querySelectorAll('.doc-card');
+    let visibleCount = 0;
+    
+    cards.forEach(card => {
+      const cardCat = card.dataset.cat;
+      const cardNombre = card.dataset.nombre?.toLowerCase() || '';
+      const cardDescripcion = card.dataset.descripcion?.toLowerCase() || '';
+      
+      const matchCat = activeCat === 'todos' || cardCat === activeCat;
+      const matchSearch = !searchTerm || 
+        cardNombre.includes(searchTerm) || 
+        cardDescripcion.includes(searchTerm);
+      
+      if (matchCat && matchSearch) {
+        card.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    
+    const emptyState = document.getElementById('empty-state');
+    if (emptyState) {
+      emptyState.classList.toggle('visible', visibleCount === 0);
+    }
+  }
+
+  // Event listeners para filtros
+  document.querySelectorAll('.cat-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      filterDocs();
+    });
+  });
+  
+  const searchInput = document.getElementById('doc-search');
+  if (searchInput) {
+    searchInput.addEventListener('input', filterDocs);
+  }
+
+  // Inicializar carga de documentos
+  cargarDocumentosFirestore();
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  }), { threshold: 0.1 });
+  
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

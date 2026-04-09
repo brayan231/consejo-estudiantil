@@ -72,12 +72,20 @@
         <div class="sidebar-link" data-panel="votaciones">
           <span class="icon">🗳️</span> Votaciones
         </div>
+         
+        <div class="sidebar-link" data-panel="documentos">
+          <span class="icon">📁</span> Documentos
+          <span class="sidebar-badge" id="badge-documentos">0</span>
+        </div>
+
 
         <div class="sidebar-section-label">Estudiantes</div>
         <div class="sidebar-link" data-panel="propuestas">
           <span class="icon">💡</span> Propuestas
           <span class="sidebar-badge" id="badge-propuestas">0</span>
         </div>
+        
+
         <div class="sidebar-link" data-panel="contacto">
           <span class="icon">💬</span> Mensajes
           <span class="sidebar-badge" id="badge-contacto">0</span>
@@ -144,6 +152,16 @@
                 <div class="stat-label">Votaciones</div>
               </div>
             </div>
+
+            <div class="stat-card">
+              <div class="stat-icon">📁</div>
+              <div>
+                <div class="stat-value" id="stat-documentos">—</div>
+                <div class="stat-label">Documentos</div>
+              </div>
+            </div>
+            
+
             <div class="stat-card">
               <div class="stat-icon">💬</div>
               <div>
@@ -194,6 +212,8 @@
     <input class="form-control" type="url" name="pdfUrl" id="input-pdfUrl" placeholder="https://drive.google.com/...">
     <small class="text-muted">Pega el enlace de Google Drive que copiaste</small>
 </div>
+
+<!-- DOCUMENTOS - Admin Panel -->
 
 
           <!-- ✅ FILA: CATEGORÍA y AUTOR -->
@@ -273,6 +293,104 @@
     </div>
   </div>
 </div>
+
+<!-- DOCUMENTOS - Admin Panel -->
+<div class="panel" id="panel-documentos">
+  <div class="grid-2" style="gap:2rem;align-items:start">
+    <!-- Formulario para subir documento -->
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">📁 Subir nuevo documento</div>
+      </div>
+      <div class="admin-section-body">
+        <form id="form-documento">
+          <div class="form-group">
+            <label class="form-label">Nombre del documento <span class="req">*</span></label>
+            <input class="form-control" type="text" name="nombre" placeholder="Ej: Reglamento del Consejo 2024">
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Categoría <span class="req">*</span></label>
+              <select class="form-control" name="categoria">
+                <option value="reglamento">📋 Reglamento</option>
+                <option value="acta">📝 Acta</option>
+                <option value="informe">📊 Informe</option>
+                <option value="formulario">📎 Formulario</option>
+                <option value="otro">📄 Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tipo de archivo</label>
+              <select class="form-control" name="tipo">
+                <option value="pdf">PDF (Google Drive)</option>
+                <option value="link">Enlace externo</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Enlace de Google Drive -->
+          <div class="form-group" id="drive-link-group">
+            <label class="form-label">🔗 Enlace de Google Drive <span class="req">*</span></label>
+            <input class="form-control" type="url" name="driveLink" placeholder="https://drive.google.com/file/d/...">
+            <small class="text-muted">
+              💡 Cómo obtener el enlace: Abre el PDF en Google Drive → Click derecho → "Obtener enlace" → Copiar enlace
+            </small>
+          </div>
+
+          <!-- Enlace externo (para tipo "link") -->
+          <div class="form-group hidden" id="external-link-group">
+            <label class="form-label">🔗 Enlace externo</label>
+            <input class="form-control" type="url" name="enlaceExterno" placeholder="https://...">
+            <small class="text-muted">Para enlaces que no sean de Google Drive</small>
+          </div>
+
+          <!-- Fecha del documento -->
+          <div class="form-group">
+            <label class="form-label">📅 Fecha del documento</label>
+            <input class="form-control" type="date" name="fechaDocumento">
+            <small class="text-muted">Si no se selecciona, se usará la fecha actual</small>
+          </div>
+
+          <!-- Descripción opcional -->
+          <div class="form-group">
+            <label class="form-label">Descripción (opcional)</label>
+            <textarea class="form-control" name="descripcion" rows="2" placeholder="Breve descripción del documento..."></textarea>
+          </div>
+
+          <!-- Visibilidad -->
+          <div class="form-group">
+            <label class="check-group">
+              <input type="checkbox" name="publico" checked>
+              <div class="check-box"></div>
+              <span class="check-label">🌍 Documento público (visible para todos los estudiantes)</span>
+            </label>
+            <small class="text-muted">Si está desmarcado, solo visible para administradores</small>
+          </div>
+
+          <button class="btn btn-primary w-full" type="button" id="btnSubirDocumento">📁 Publicar documento</button>
+          <button class="btn btn-outline w-full" type="button" id="btnCancelarEdicionDoc" style="display:none;margin-top:8px">✕ Cancelar edición</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Lista de documentos existentes -->
+    <div>
+      <div class="admin-section-title mb-3 flex justify-between items-center">
+        <span>📂 Documentos publicados</span>
+        <div class="flex gap-1">
+          <button class="btn btn-outline btn-sm filter-documento active" data-filter="todos">Todos</button>
+          <button class="btn btn-outline btn-sm filter-documento" data-filter="reglamento">Reglamentos</button>
+          <button class="btn btn-outline btn-sm filter-documento" data-filter="acta">Actas</button>
+          <button class="btn btn-outline btn-sm filter-documento" data-filter="informe">Informes</button>
+        </div>
+      </div>
+      <div id="admin-documentos-list"></div>
+    </div>
+  </div>
+</div>
+
+
 
         <!-- EVENTOS -->
         <div class="panel" id="panel-eventos">
@@ -453,13 +571,9 @@ import {
 import { toastSuccess, toastError, toastInfo, confirm } from './js/ui.js';
 
 const IMGBB_API_KEY = '3a2fec3c4daeadc12281777760d6ea00';
-const CLOUDINARY_CLOUD_NAME = 'dyyjjrzgy';
-const CLOUDINARY_UPLOAD_PRESET = 'mi-instituto';
-const CLOUDINARY_UPLOAD_PRESET_PDF = 'pdfs-coes'; // ✅ nuevo
-
 
 // ============================================================
-// ✅ SUBIR IMAGEN A IMGBB (reemplaza Firebase Storage)
+// ✅ SUBIR IMAGEN A IMGBB
 // ============================================================
 async function subirImagenImgbb(file) {
   if (file.size > 2 * 1024 * 1024) {
@@ -493,7 +607,6 @@ async function subirImagenImgbb(file) {
   }
 }
 
-// ✅ SUBIR MÚLTIPLES IMÁGENES
 async function subirMultiplesImagenes(files) {
   if (!files || files.length === 0) return [];
   const urls = [];
@@ -502,117 +615,6 @@ async function subirMultiplesImagenes(files) {
     if (url) urls.push(url);
   }
   return urls;
-}
-
-// ============================================================
-// SERVIDORES GRATUITOS PARA PDF (sin registro)
-// ============================================================
-
-// Opción 1: tmpfiles.org (archivos duran ~30 días)
-async function subirPDFtmpfiles(file) {
-    if (!file || file.type !== 'application/pdf') {
-        toastError('Error', 'Debes seleccionar un PDF válido');
-        return null;
-    }
-    
-    if (file.size > 10 * 1024 * 1024) {
-        toastError('Error', 'El PDF no puede superar los 10MB');
-        return null;
-    }
-    
-    try {
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        const response = await fetch('https://tmpfiles.org/api/v1/upload', {
-            method: 'POST',
-            body: formData
-        });
-        
-        const data = await response.json();
-        
-        if (data.status === 'success' && data.data.url) {
-            // tmpfiles.org devuelve una página de descarga, necesitamos la URL directa
-            const directUrl = data.data.url.replace('/download/', '/dl/');
-            console.log('PDF subido a tmpfiles:', directUrl);
-            toastSuccess('PDF subido', 'Archivo guardado en tmpfiles.org');
-            return directUrl;
-        } else {
-            throw new Error('Error en la respuesta del servidor');
-        }
-    } catch (error) {
-        console.error('Error subiendo a tmpfiles:', error);
-        toastError('Error', 'No se pudo subir el PDF a tmpfiles.org');
-        return null;
-    }
-}
-
-// Opción 2: gofile.io (más estable, archivos duran ~10 días)
-async function subirPDFgofile(file) {
-    if (!file || file.type !== 'application/pdf') {
-        toastError('Error', 'Debes seleccionar un PDF válido');
-        return null;
-    }
-    
-    if (file.size > 10 * 1024 * 1024) {
-        toastError('Error', 'El PDF no puede superar los 10MB');
-        return null;
-    }
-    
-    try {
-        // Primero obtener servidor
-        const serverResp = await fetch('https://api.gofile.io/servers');
-        const serverData = await serverResp.json();
-        
-        if (!serverData.status === 'ok') {
-            throw new Error('No se pudo obtener servidor');
-        }
-        
-        const server = serverData.data.servers[0].name;
-        
-        // Subir archivo
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        const response = await fetch(`https://${server}.gofile.io/uploadFile`, {
-            method: 'POST',
-            body: formData
-        });
-        
-        const data = await response.json();
-        
-        if (data.status === 'ok') {
-            const downloadUrl = `https://${server}.gofile.io/download/${data.data.fileId}`;
-            console.log('PDF subido a gofile:', downloadUrl);
-            toastSuccess('PDF subido', 'Archivo guardado en gofile.io');
-            return downloadUrl;
-        } else {
-            throw new Error('Error en la respuesta');
-        }
-    } catch (error) {
-        console.error('Error subiendo a gofile:', error);
-        toastError('Error', 'No se pudo subir el PDF a gofile.io');
-        return null;
-    }
-}
-
-// Función principal que intenta con múltiples servicios (fallback)
-async function subirPDF(file) {
-    // Intentar con gofile primero (más estable)
-    let url = await subirPDFgofile(file);
-    
-    // Si falla, intentar con tmpfiles
-    if (!url) {
-        toastInfo('Reintentando', 'Usando servidor alternativo...');
-        url = await subirPDFtmpfiles(file);
-    }
-    
-    // Si ambos fallan, mostrar error
-    if (!url) {
-        toastError('Error', 'No se pudo subir el PDF. Intenta con otro archivo más pequeño');
-    }
-    
-    return url;
 }
 
 // ============================================================
@@ -634,8 +636,8 @@ function escapeHtml(str) {
 }
 
 async function loadDashboardStats() {
-  const collections = ['noticias', 'eventos', 'propuestas', 'votaciones', 'contacto'];
-  const ids = ['stat-noticias', 'stat-eventos', 'stat-propuestas', 'stat-votaciones', 'stat-contacto'];
+  const collections = ['noticias', 'eventos', 'propuestas', 'votaciones', 'contacto', 'documentos'];
+  const ids = ['stat-noticias', 'stat-eventos', 'stat-propuestas', 'stat-votaciones', 'stat-contacto', 'stat-documentos'];
   for (let i = 0; i < collections.length; i++) {
     try {
       const snap = await getDocs(collection(db, collections[i]));
@@ -682,7 +684,296 @@ async function loadRecentItems() {
 }
 
 // ============================================================
-// ✅ FIX: PREVIEW DE IMÁGENES (el div preview-imagenes ahora existe)
+// GESTIÓN DE DOCUMENTOS (SOLO GOOGLE DRIVE)
+// ============================================================
+
+let editingDocumentoId = null;
+
+function convertirGoogleDriveUrl(url) {
+    if (!url) return null;
+    
+    let fileId = '';
+    
+    if (url.includes('/file/d/')) {
+        fileId = url.split('/file/d/')[1].split('/')[0];
+    } else if (url.includes('id=')) {
+        fileId = url.split('id=')[1].split('&')[0];
+    } else if (url.includes('uc?id=')) {
+        fileId = url.split('uc?id=')[1].split('&')[0];
+    } else if (url.includes('open?id=')) {
+        fileId = url.split('open?id=')[1].split('&')[0];
+    } else if (url.includes('drive.google.com')) {
+        const match = url.match(/[-\w]{25,}/);
+        if (match) fileId = match[0];
+    }
+    
+    if (fileId) {
+        return `https://drive.google.com/file/d/${fileId}/preview`;
+    }
+    
+    return url;
+}
+
+const tipoSelectDoc = document.querySelector('#form-documento [name="tipo"]');
+const driveLinkGroup = document.getElementById('drive-link-group');
+const externalLinkGroup = document.getElementById('external-link-group');
+
+if (tipoSelectDoc) {
+    tipoSelectDoc.addEventListener('change', (e) => {
+        const isDrive = e.target.value === 'pdf';
+        const isExternal = e.target.value === 'link';
+        
+        if (driveLinkGroup) driveLinkGroup.classList.toggle('hidden', !isDrive);
+        if (externalLinkGroup) externalLinkGroup.classList.toggle('hidden', !isExternal);
+    });
+}
+
+function resetFormDocumento() {
+    const form = document.getElementById('form-documento');
+    if (!form) return;
+    form.reset();
+    const publicoCheck = form.querySelector('[name="publico"]');
+    if (publicoCheck) publicoCheck.checked = true;
+    const tipo = form.querySelector('[name="tipo"]');
+    if (tipo) tipo.value = 'pdf';
+    if (driveLinkGroup) driveLinkGroup.classList.remove('hidden');
+    if (externalLinkGroup) externalLinkGroup.classList.add('hidden');
+    editingDocumentoId = null;
+    const btn = document.getElementById('btnSubirDocumento');
+    if (btn) btn.innerHTML = '📁 Publicar documento';
+    const btnCancelar = document.getElementById('btnCancelarEdicionDoc');
+    if (btnCancelar) btnCancelar.style.display = 'none';
+}
+
+document.getElementById('btnCancelarEdicionDoc')?.addEventListener('click', () => {
+    resetFormDocumento();
+    toastInfo('Cancelado', 'Se canceló la edición');
+});
+
+function loadDocumentosList() {
+    const documentosList = document.getElementById('admin-documentos-list');
+    if (!documentosList) return;
+    
+    const q = query(collection(db, 'documentos'), orderBy('fechaCreacion', 'desc'));
+    
+    onSnapshot(q, (snap) => {
+        const badge = document.getElementById('badge-documentos');
+        if (badge) badge.textContent = snap.size;
+        
+        if (snap.empty) {
+            documentosList.innerHTML = '<div style="text-align:center;padding:2rem;color:#64748b">No hay documentos subidos</div>';
+            return;
+        }
+        
+        const categoriaMap = {
+            'reglamento': { label: '📋 Reglamento', class: 'badge-reglamento' },
+            'acta': { label: '📝 Acta', class: 'badge-acta' },
+            'informe': { label: '📊 Informe', class: 'badge-informe' },
+            'formulario': { label: '📎 Formulario', class: 'badge-formulario' },
+            'otro': { label: '📄 Otro', class: 'badge-otro' }
+        };
+        
+        documentosList.innerHTML = snap.docs.map(d => {
+            const data = d.data();
+            const fechaDoc = data.fechaDocumento ? new Date(data.fechaDocumento).toLocaleDateString('es-PE') : null;
+            const categoria = categoriaMap[data.categoria] || categoriaMap['otro'];
+            const tipoIcon = data.tipo === 'pdf' ? '📕' : '🔗';
+            let viewUrl = data.url || '#';
+            let esDrive = data.tipo === 'pdf' && data.url && data.url.includes('drive.google.com');
+            
+            return `
+                <div class="admin-section" style="margin-bottom:1rem">
+                    <div class="admin-section-header">
+                        <div class="admin-section-title" style="flex:1">
+                            ${tipoIcon} ${escapeHtml(data.nombre)}
+                            ${!data.publico ? '<span class="badge badge-gray" style="margin-left:0.5rem">🔒 Interno</span>' : ''}
+                            ${esDrive ? '<span class="badge badge-blue" style="margin-left:0.5rem">✓ Google Drive</span>' : ''}
+                        </div>
+                        <div class="flex gap-1">
+                            <button class="btn btn-outline btn-sm" onclick="window.editarDocumento('${d.id}')">✏️ Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="window.eliminarDocumento('${d.id}')">🗑 Eliminar</button>
+                        </div>
+                    </div>
+                    <div class="admin-section-body">
+                        <div class="text-muted" style="margin-bottom:0.5rem;font-size:0.8rem">
+                            📂 ${categoria.label} · ${data.tipo === 'pdf' ? 'PDF' : 'Enlace externo'} 
+                            ${fechaDoc ? `· 📅 ${fechaDoc}` : ''}
+                        </div>
+                        ${data.descripcion ? `<div style="background:rgba(0,200,240,0.1);padding:0.5rem;border-radius:8px;margin-bottom:0.5rem">📝 ${escapeHtml(data.descripcion)}</div>` : ''}
+                        <div style="display:flex;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap">
+                            <a href="${escapeHtml(viewUrl)}" target="_blank" class="btn btn-primary btn-sm">📄 Ver documento</a>
+                            ${esDrive ? `<a href="${escapeHtml(data.url.replace('/preview', ''))}" target="_blank" class="btn btn-outline btn-sm">⬇ Abrir en Google Drive</a>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    });
+}
+
+document.getElementById('btnSubirDocumento')?.addEventListener('click', async () => {
+    const form = document.getElementById('form-documento');
+    const nombre = form.querySelector('[name="nombre"]').value.trim();
+    const categoria = form.querySelector('[name="categoria"]').value;
+    const tipo = form.querySelector('[name="tipo"]').value;
+    const fechaDocumento = form.querySelector('[name="fechaDocumento"]')?.value || null;
+    const descripcion = form.querySelector('[name="descripcion"]')?.value.trim() || null;
+    const publico = form.querySelector('[name="publico"]')?.checked || false;
+    const driveLink = form.querySelector('[name="driveLink"]')?.value.trim() || null;
+    const enlaceExterno = form.querySelector('[name="enlaceExterno"]')?.value.trim() || null;
+    
+    if (!nombre) {
+        toastError('Error', 'El nombre del documento es obligatorio');
+        return;
+    }
+    
+    let url = null;
+    
+    if (tipo === 'pdf') {
+        if (!driveLink) {
+            toastError('Error', 'Debes ingresar el enlace de Google Drive');
+            return;
+        }
+        url = convertirGoogleDriveUrl(driveLink);
+        if (!url) {
+            toastError('Error', 'El enlace de Google Drive no es válido');
+            return;
+        }
+    } else if (tipo === 'link') {
+        if (!enlaceExterno) {
+            toastError('Error', 'Debes ingresar un enlace externo');
+            return;
+        }
+        url = enlaceExterno;
+    }
+    
+    const btn = document.getElementById('btnSubirDocumento');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Guardando...';
+    
+    try {
+        const documentoData = {
+            nombre,
+            categoria,
+            tipo,
+            url,
+            fechaDocumento: fechaDocumento || null,
+            descripcion: descripcion || null,
+            publico,
+            fechaActualizacion: serverTimestamp()
+        };
+        
+        if (editingDocumentoId) {
+            await updateDoc(doc(db, 'documentos', editingDocumentoId), documentoData);
+            toastSuccess('Documento actualizado', 'Los cambios se guardaron correctamente');
+        } else {
+            documentoData.fechaCreacion = serverTimestamp();
+            await addDoc(collection(db, 'documentos'), documentoData);
+            toastSuccess('Documento publicado', 'El documento está disponible para los estudiantes');
+        }
+        
+        resetFormDocumento();
+        
+    } catch (error) {
+        console.error('Error al guardar documento:', error);
+        toastError('Error', 'No se pudo guardar el documento: ' + error.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+});
+
+window.editarDocumento = async (id) => {
+    try {
+        const docSnap = await getDoc(doc(db, 'documentos', id));
+        if (!docSnap.exists()) {
+            toastError('Error', 'El documento no existe');
+            return;
+        }
+        
+        const data = docSnap.data();
+        editingDocumentoId = id;
+        
+        const form = document.getElementById('form-documento');
+        form.querySelector('[name="nombre"]').value = data.nombre || '';
+        form.querySelector('[name="categoria"]').value = data.categoria || 'otro';
+        form.querySelector('[name="tipo"]').value = data.tipo || 'pdf';
+        if (data.fechaDocumento) form.querySelector('[name="fechaDocumento"]').value = data.fechaDocumento;
+        if (data.descripcion) form.querySelector('[name="descripcion"]').value = data.descripcion;
+        form.querySelector('[name="publico"]').checked = data.publico !== false;
+        
+        const isDrive = data.tipo === 'pdf';
+        if (driveLinkGroup) driveLinkGroup.classList.toggle('hidden', !isDrive);
+        if (externalLinkGroup) externalLinkGroup.classList.toggle('hidden', isDrive);
+        
+        if (isDrive && data.url) {
+            let originalUrl = data.url.replace('/preview', '');
+            form.querySelector('[name="driveLink"]').value = originalUrl;
+        } else if (!isDrive && data.url) {
+            form.querySelector('[name="enlaceExterno"]').value = data.url;
+        }
+        
+        const btn = document.getElementById('btnSubirDocumento');
+        if (btn) btn.innerHTML = '✏️ Actualizar documento';
+        
+        const btnCancelar = document.getElementById('btnCancelarEdicionDoc');
+        if (btnCancelar) btnCancelar.style.display = 'block';
+        
+        toastInfo('Modo edición', `Editando: "${data.nombre}"`);
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (error) {
+        console.error('Error editarDocumento:', error);
+        toastError('Error', 'No se pudo cargar el documento: ' + error.message);
+    }
+};
+
+window.eliminarDocumento = async (id) => {
+    const confirmed = await confirm('¿Eliminar este documento? Esta acción no se puede deshacer.');
+    if (!confirmed) return;
+    try {
+        await deleteDoc(doc(db, 'documentos', id));
+        toastSuccess('Eliminado', 'El documento fue eliminado correctamente');
+        if (editingDocumentoId === id) resetFormDocumento();
+    } catch (error) {
+        console.error('Error al eliminar:', error);
+        toastError('Error', 'No se pudo eliminar el documento: ' + error.message);
+    }
+};
+
+let currentDocumentoFilter = 'todos';
+
+function filterDocumentosAdmin() {
+    const cards = document.querySelectorAll('#admin-documentos-list .admin-section');
+    let visible = 0;
+    cards.forEach(card => {
+        const categoriaText = card.querySelector('.text-muted')?.innerText || '';
+        let match = currentDocumentoFilter === 'todos';
+        if (!match) {
+            match = categoriaText.toLowerCase().includes(currentDocumentoFilter);
+        }
+        if (match) {
+            card.style.display = '';
+            visible++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+document.querySelectorAll('.filter-documento').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-documento').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentDocumentoFilter = btn.dataset.filter;
+        filterDocumentosAdmin();
+    });
+});
+
+loadDocumentosList();
+
+// ============================================================
+// PREVIEW DE IMÁGENES
 // ============================================================
 const inputImagenes = document.getElementById('input-imagenes');
 
@@ -713,20 +1004,6 @@ if (inputImagenes) {
   inputImagenes.addEventListener('change', (e) => {
     imagenesSeleccionadas = Array.from(e.target.files);
     renderPreviewImagenes();
-  });
-}
-
-// Preview nombre PDF
-const inputPdfEl = document.getElementById('input-pdf');
-if (inputPdfEl) {
-  inputPdfEl.addEventListener('change', (e) => {
-    const infoPdf = document.getElementById('info-pdf');
-    if (infoPdf) {
-      const file = e.target.files[0];
-      infoPdf.textContent = file
-        ? `📄 Seleccionado: ${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`
-        : '';
-    }
   });
 }
 
@@ -840,9 +1117,6 @@ function loadNoticiasList() {
   });
 }
 
-// ============================================================
-// ✅ FIX COMPLETO: PUBLICAR / EDITAR NOTICIA UNIFICADO
-// ============================================================
 function resetFormNoticia() {
   const form = document.getElementById('form-noticia');
   if (!form) return;
@@ -854,12 +1128,7 @@ function resetFormNoticia() {
   imagenesSeleccionadas = [];
   const inputImg = document.getElementById('input-imagenes');
   if (inputImg) inputImg.value = '';
-  const inputPdf = document.getElementById('input-pdf');
-  if (inputPdf) inputPdf.value = '';
-  const infoPdf = document.getElementById('info-pdf');
-  if (infoPdf) infoPdf.textContent = '';
   editingNoticiaId = null;
-  // ✅ FIX: buscar botón por ID, no por type="submit"
   const btn = document.getElementById('btnPublicarNoticia');
   if (btn) btn.innerHTML = '📰 Publicar noticia';
   const btnCancelar = document.getElementById('btnCancelarEdicion');
@@ -871,14 +1140,9 @@ document.getElementById('btnCancelarEdicion')?.addEventListener('click', () => {
   toastInfo('Cancelado', 'Se canceló la edición');
 });
 
-// ============================================================
-// FUNCIÓN PARA CONVERTIR URL DE GOOGLE DRIVE
-// ============================================================
-function convertirGoogleDriveUrl(url) {
+function convertirGoogleDriveUrlNoticia(url) {
     if (!url) return null;
-    
     let fileId = '';
-    
     if (url.includes('/file/d/')) {
         fileId = url.split('/file/d/')[1].split('/')[0];
     } else if (url.includes('id=')) {
@@ -888,17 +1152,12 @@ function convertirGoogleDriveUrl(url) {
     } else if (url.includes('open?id=')) {
         fileId = url.split('open?id=')[1].split('&')[0];
     }
-    
     if (fileId) {
         return `https://drive.google.com/uc?export=download&id=${fileId}`;
     }
-    
     return url;
 }
 
-// ============================================================
-// FUNCIÓN PRINCIPAL DE PUBLICAR NOTICIA (CORREGIDA)
-// ============================================================
 document.getElementById('btnPublicarNoticia')?.addEventListener('click', async () => {
   const form = document.getElementById('form-noticia');
   const titulo = form.querySelector('[name="titulo"]').value.trim();
@@ -945,7 +1204,6 @@ document.getElementById('btnPublicarNoticia')?.addEventListener('click', async (
       toastSuccess('Noticia creada', 'Publicada correctamente');
     }
 
-    // ✅ SUBIR IMÁGENES
     if (imagenesSeleccionadas.length > 0) {
       btn.innerHTML = '⏳ Subiendo imágenes...';
       const imagenesUrls = await subirMultiplesImagenes(imagenesSeleccionadas);
@@ -955,18 +1213,16 @@ document.getElementById('btnPublicarNoticia')?.addEventListener('click', async (
       }
     }
     
-    // ✅ USAR ENLACE DE GOOGLE DRIVE (NO SUBIR ARCHIVO)
     const pdfUrlInput = document.getElementById('input-pdfUrl')?.value.trim();
     let pdfUrlFinal = null;
 
     if (pdfUrlInput) {
-        pdfUrlFinal = convertirGoogleDriveUrl(pdfUrlInput);
+        pdfUrlFinal = convertirGoogleDriveUrlNoticia(pdfUrlInput);
         if (pdfUrlFinal) {
             toastSuccess('Enlace de Google Drive', 'Enlace procesado correctamente');
         }
     }
 
-    // ✅ GUARDAR PDF EN FIREBASE
     if (pdfUrlFinal) {
       await updateDoc(doc(db, 'noticias', noticiaId), { pdfUrl: pdfUrlFinal });
       toastSuccess('PDF enlazado', 'El enlace del PDF se guardó correctamente');
@@ -982,7 +1238,6 @@ document.getElementById('btnPublicarNoticia')?.addEventListener('click', async (
     btn.innerHTML = originalText;
   }
 });
-
 
 window.editarNoticia = async (id) => {
   try {
@@ -1005,10 +1260,6 @@ window.editarNoticia = async (id) => {
     if (data.resumen) form.querySelector('[name="resumen"]').value = data.resumen;
     if (data.enlaceExterno) form.querySelector('[name="enlaceExterno"]').value = data.enlaceExterno;
 
-    // ✅ ELIMINA estas líneas:
-    // const inputPdfUrl = document.getElementById('input-pdfUrl');
-    // if (inputPdfUrl) inputPdfUrl.value = data.pdfUrl || '';
-
     const btn = document.getElementById('btnPublicarNoticia');
     if (btn) btn.innerHTML = '✏️ Actualizar noticia';
 
@@ -1022,7 +1273,6 @@ window.editarNoticia = async (id) => {
     toastError('Error', 'No se pudo cargar la noticia: ' + error.message);
   }
 };
-
 
 window.eliminarNoticia = async (id) => {
   const confirmed = await confirm('¿Eliminar esta noticia? Esta acción no se puede deshacer.');
@@ -1038,7 +1288,7 @@ window.eliminarNoticia = async (id) => {
 };
 
 // ============================================================
-// EVENTOS CRUD COMPLETO (con edición)
+// EVENTOS CRUD
 // ============================================================
 const eventosForm = document.getElementById('form-evento');
   
@@ -1320,7 +1570,6 @@ function loadPropuestas() {
       for (const docSnap of querySnapshot.docs) {
         const propuesta = { id: docSnap.id, ...docSnap.data() };
         
-        // ✅ LEER ESTRUCTURA CORRECTA (igual que en propuestas.html)
         const votos = propuesta.votos || { '👍': 0, '👎': 0, '💡': 0 };
         const votosPositivos = votos['👍'] || 0;
         const votosNegativos = votos['👎'] || 0;
@@ -1328,11 +1577,9 @@ function loadPropuestas() {
         const totalVotos = votosPositivos + votosNegativos + votosSugerencia;
         const porcentajeApoyo = totalVotos > 0 ? Math.round((votosPositivos / totalVotos) * 100) : 0;
         
-        // ✅ LEER VOTANTES CORRECTAMENTE
         const votantes = propuesta.votantes || {};
         const votantesCount = Object.keys(votantes).length;
         
-        // Separar votantes por tipo
         const votantesPositivos = [];
         const votantesNegativos = [];
         const votantesSugerencia = [];
@@ -1412,7 +1659,6 @@ function loadPropuestas() {
   }
 }
 
-
 window.verDetallePropuesta = async (propuestaId) => {
   const modal = document.getElementById('modal-propuesta-detalle');
   const content = document.getElementById('modal-propuesta-content');
@@ -1438,13 +1684,11 @@ window.verDetallePropuesta = async (propuestaId) => {
     const votosSugerencia = votos['💡'] || 0;
     const totalVotos = votosPositivos + votosNegativos + votosSugerencia;
     
-    // Separar votantes por tipo con datos completos
     const votantesPositivos = [];
     const votantesNegativos = [];
     const votantesSugerencia = [];
     
     for (const [userId, votoInfo] of Object.entries(votantes)) {
-      // Si votoInfo es un objeto con datos completos
       if (typeof votoInfo === 'object' && votoInfo !== null) {
         const votante = {
           uid: userId,
@@ -1459,7 +1703,6 @@ window.verDetallePropuesta = async (propuestaId) => {
         else if (votoInfo.tipo === '👎') votantesNegativos.push(votante);
         else if (votoInfo.tipo === '💡') votantesSugerencia.push(votante);
       } else {
-        // Versión antigua (solo el tipo)
         const votante = {
           uid: userId,
           nombre: 'Usuario',
@@ -1510,7 +1753,6 @@ window.verDetallePropuesta = async (propuestaId) => {
       </div>
     `;
     
-    // Función para generar tabla de votantes
     function generarTablaVotantes(votantes, titulo, color) {
       if (!votantes || votantes.length === 0) return '';
       
@@ -1824,7 +2066,7 @@ window.activatePanel = (name) => {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   const panel = document.getElementById('panel-' + name);
   if (panel) panel.classList.add('active');
-  const titles = { dashboard:'Dashboard', noticias:'Noticias', eventos:'Eventos', votaciones:'Votaciones', propuestas:'Propuestas', contacto:'Mensajes' };
+  const titles = { dashboard:'Dashboard', noticias:'Noticias', eventos:'Eventos', votaciones:'Votaciones', propuestas:'Propuestas', contacto:'Mensajes', documentos:'Documentos' };
   const titleEl = document.getElementById('topbar-title');
   if (titleEl) titleEl.textContent = titles[name] || name;
   document.getElementById('admin-sidebar')?.classList.remove('open');
@@ -1843,8 +2085,6 @@ if (sidebarToggle && sidebar) {
   sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
 }
 
-
-// Función para descargar/abrir PDF
 window.descargarPDF = (url, titulo) => {
     if (!url) {
         toastError('Error', 'No hay PDF disponible');
@@ -1853,11 +2093,9 @@ window.descargarPDF = (url, titulo) => {
     
     console.log('Abriendo PDF desde:', url);
     
-    // Para Google Drive, abrir en nueva pestaña
     if (url.includes('drive.google.com') || url.includes('googleusercontent.com')) {
         window.open(url, '_blank');
     } else {
-        // Para otras URLs
         const link = document.createElement('a');
         link.href = url;
         link.target = '_blank';
@@ -1866,7 +2104,6 @@ window.descargarPDF = (url, titulo) => {
     
     toastInfo('PDF', 'El PDF se abrirá en una nueva pestaña');
 };
-
 
 </script>
 

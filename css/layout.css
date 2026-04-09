@@ -776,3 +776,73 @@
 
 
 
+/* ════════════════════════════
+   AUTH BUTTON CONTAINER
+════════════════════════════ */
+#auth-button-container {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-left: .5rem;
+  flex-shrink: 0;
+}
+
+/* Nombre de usuario */
+#auth-button-container .user-name,
+#auth-button-container [class*="user"] {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cyan-300);
+  font-size: .82rem;
+  font-weight: 500;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
+
+/* Botón cerrar sesión */
+#auth-button-container button,
+#auth-button-container .btn-logout {
+  padding: 7px 18px;
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: var(--white);
+  font-weight: 600;
+  font-size: .82rem;
+  border: 1px solid rgba(231, 76, 60, .35);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  letter-spacing: .02em;
+  font-family: inherit;
+  box-shadow: 0 2px 12px rgba(231, 76, 60, .3);
+  transition: transform var(--t-spring), box-shadow var(--t), background var(--t);
+}
+#auth-button-container button:hover,
+#auth-button-container .btn-logout:hover {
+  background: linear-gradient(135deg, #e74c3c, #ff6b5b);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(231, 76, 60, .5);
+}
+#auth-button-container button:active,
+#auth-button-container .btn-logout:active {
+  transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #auth-button-container {
+    margin-left: 0;
+    padding: 8px 16px;
+    width: 100%;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+  #auth-button-container button,
+  #auth-button-container .btn-logout {
+    width: 100%;
+    justify-content: center;
+  }
+}
