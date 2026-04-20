@@ -688,3 +688,50 @@ input:-webkit-autofill {
   transition: background-color 5000s ease-in-out 0s;
   caret-color: #fff;
 }
+
+/* Estilos para galería de adjuntos en el panel admin */
+.attachment-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+}
+
+.attachment-item {
+  width: 90px;
+  height: 90px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.attachment-item:hover {
+  transform: scale(1.05);
+  border-color: var(--gold-300);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.attachment-item img,
+.attachment-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.attachment-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  padding: 0px 4px;
+  font-size: 0.6rem;
+  color: white;
+}
